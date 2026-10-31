@@ -1,0 +1,63 @@
+{
+    "source": "notebooks/MaintainIQ Project.ipynb",
+    "method": "5-fold stratified cross-validation on training set",
+    "scoring_note": "Sorted by F1-score descending. Selected model highlighted.",
+    "results": [
+        {
+            "model": "Decision Tree",
+            "precision": 0.7036,
+            "recall": 0.5719,
+            "f1_score": 0.6283,
+            "roc_auc": 0.7817,
+            "selected": true
+        },
+        {
+            "model": "Random Forest",
+            "precision": 0.9112,
+            "recall": 0.3653,
+            "f1_score": 0.5204,
+            "roc_auc": 0.9660,
+            "selected": false
+        },
+        {
+            "model": "KNN",
+            "precision": 0.7949,
+            "recall": 0.3174,
+            "f1_score": 0.4522,
+            "roc_auc": 0.8471,
+            "selected": false
+        },
+        {
+            "model": "MLP Neural Network",
+            "precision": 0.7800,
+            "recall": 0.3285,
+            "f1_score": 0.4320,
+            "roc_auc": 0.9355,
+            "selected": false
+        },
+        {
+            "model": "SVM",
+            "precision": 0.2783,
+            "recall": 0.8670,
+            "f1_score": 0.4210,
+            "roc_auc": 0.9602,
+            "selected": false
+        },
+        {
+            "model": "Naive Bayes",
+            "precision": 0.3642,
+            "recall": 0.2399,
+            "f1_score": 0.2887,
+            "roc_auc": 0.8622,
+            "selected": false
+        },
+        {
+            "model": "Logistic Regression",
+            "precision": 0.1374,
+            "recall": 0.8044,
+            "f1_score": 0.2346,
+            "roc_auc": 0.8965,
+            "selected": false
+        }
+    ]
+}

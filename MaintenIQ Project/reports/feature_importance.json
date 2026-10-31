@@ -1,0 +1,38 @@
+{
+    "source": "notebooks/MaintainIQ Project.ipynb",
+    "method": "Permutation importance on test set, scoring=roc_auc, n_repeats=10, random_state=42",
+    "metric": "Mean change in ROC-AUC when feature is randomly shuffled",
+    "disclaimer": "Permutation importance measures how much each feature contributes to model accuracy on the test set. It does not establish causation.",
+    "features": [
+        {
+            "feature": "Rotational speed [rpm]",
+            "importance": 0.1456,
+            "std": 0.0177
+        },
+        {
+            "feature": "Torque [Nm]",
+            "importance": 0.1118,
+            "std": 0.0165
+        },
+        {
+            "feature": "Air temperature [K]",
+            "importance": 0.0960,
+            "std": 0.0169
+        },
+        {
+            "feature": "Tool wear [min]",
+            "importance": 0.0492,
+            "std": 0.0115
+        },
+        {
+            "feature": "Type",
+            "importance": 0.0203,
+            "std": 0.0088
+        },
+        {
+            "feature": "Process temperature [K]",
+            "importance": -0.0105,
+            "std": 0.0169
+        }
+    ]
+}

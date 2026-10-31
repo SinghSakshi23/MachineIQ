@@ -1,0 +1,32 @@
+[
+    {
+        "feature": "Torque [Nm]",
+        "importance_mean": 0.2951,
+        "importance_std": 0.0195
+    },
+    {
+        "feature": "Rotational speed [rpm]",
+        "importance_mean": 0.2459,
+        "importance_std": 0.0159
+    },
+    {
+        "feature": "Tool wear [min]",
+        "importance_mean": 0.1818,
+        "importance_std": 0.0074
+    },
+    {
+        "feature": "Air temperature [K]",
+        "importance_mean": 0.1652,
+        "importance_std": 0.0132
+    },
+    {
+        "feature": "Process temperature [K]",
+        "importance_mean": 0.0815,
+        "importance_std": 0.0285
+    },
+    {
+        "feature": "Type",
+        "importance_mean": 0.0377,
+        "importance_std": 0.0135
+    }
+]

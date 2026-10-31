@@ -1,0 +1,1197 @@
+{% extends "base.html" %}
+
+{% block title %}MaintenIQ — Predictive Maintenance &amp; Industrial AI{% endblock %}
+{% block meta_description %}MaintenIQ predicts industrial machine failure and downtime risks using calibrated machine
+learning models and operating sensor telemetry.{% endblock %}
+
+{% block body_class %}dashboard-page{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero Section ── -->
+<section class="mq-hero-section" aria-labelledby="hero-heading">
+  <div class="mq-grid-bg" aria-hidden="true"></div>
+  <div class="mq-hero-glow-1" aria-hidden="true"></div>
+  <div class="mq-hero-glow-2" aria-hidden="true"></div>
+
+  <div class="mq-container">
+    <div class="mq-hero-grid">
+
+      <!-- Hero Copy -->
+      <div class="mq-hero-content">
+        <div class="mq-hero-badge-row">
+          <span class="mq-tag">
+            <span class="mq-pulse-dot-teal"></span>
+            AI Core v2.4 Operational
+          </span>
+          <span class="mq-tag mq-tag-violet">
+            AI4I 2020 Industrial Benchmark
+          </span>
+          <button type="button" class="theme-toggle-btn mq-hero-theme-pill" aria-label="Toggle Light / Dark Mode"
+            title="Toggle between White / Light Mode and Dark Mode">
+            <span class="theme-toggle-icon">🌙</span>
+            <span class="theme-toggle-text">Dark Mode</span>
+          </button>
+        </div>
+
+        <h1 class="mq-hero-headline" id="hero-heading">
+          Predict Failure.<br>
+          <span class="mq-gradient-text">Prevent Downtime.</span>
+        </h1>
+
+        <p class="mq-hero-subtext">
+          MaintenIQ continuously monitors industrial operating telemetry—temperatures, rotational speed, torque, and
+          tool wear—deploying calibrated machine-learning models to forecast mechanical failure risk before catastrophic
+          breakdowns halt production.
+        </p>
+
+        <div class="mq-hero-actions">
+          <a href="/predict" class="mq-btn-primary" id="btn-hero-predict">
+            ⚡ Check My Machine
+          </a>
+          <a href="#interactive-preview" class="mq-btn-secondary" id="btn-hero-explore">
+            🔬 Explore the Intelligence
+          </a>
+          <a href="/live" class="mq-btn-outline" id="btn-hero-live">
+            <span class="mq-pulse-dot" aria-hidden="true"></span> Live Telemetry Stream
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Visual with Interactive Floating HUD -->
+      <div class="mq-hero-visual-wrapper">
+        <div class="mq-hero-visual-frame">
+          <img src="{{ url_for('static', filename='img/hero_smart_machine.jpg') }}"
+            alt="Industrial robotic arm and CNC machining center in modern smart factory with laser telemetry"
+            loading="eager" />
+          <div class="mq-hero-overlay-scanline"></div>
+          <div class="mq-hero-overlay-gradient"></div>
+        </div>
+
+        <!-- Floating HUD Chip: Top Right -->
+        <div class="mq-floating-hud mq-hud-top-right" role="status" aria-label="Spindle Velocity Metric">
+          <div class="mq-hud-icon mq-hud-icon-teal">⚡</div>
+          <div>
+            <div class="mq-hud-label">Spindle Velocity</div>
+            <div class="mq-hud-val">1,530 RPM <span style="font-size:0.75rem; color:var(--mq-lime);">[NOMINAL]</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating HUD Chip: Bottom Left -->
+        <div class="mq-floating-hud mq-hud-bottom-left" role="status" aria-label="Machine Health Status">
+          <div class="mq-hud-icon mq-hud-icon-violet">🛡️</div>
+          <div>
+            <div class="mq-hud-label">Health &amp; Risk Rating</div>
+            <div class="mq-hud-val">98.6% Optimal <span style="font-size:0.75rem; color:var(--mq-teal);">(1.4%
+                Risk)</span></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Benchmark Metrics Ribbon -->
+    <div class="mq-metrics-strip" role="region" aria-label="Verified Model Performance Benchmarks">
+      <div class="mq-metric-col">
+        <div class="mq-metric-num mq-gradient-text-teal">97.2%</div>
+        <div class="mq-metric-title">Test Set Accuracy</div>
+        <div class="mq-metric-sub">Calibrated Decision Tree baseline</div>
+      </div>
+      <div class="mq-metric-col">
+        <div class="mq-metric-num mq-gradient-text">0.885</div>
+        <div class="mq-metric-title">Test ROC-AUC Score</div>
+        <div class="mq-metric-sub">Platt-calibrated probability discrimination</div>
+      </div>
+      <div class="mq-metric-col">
+        <div class="mq-metric-num mq-gradient-text-violet">5 Modes</div>
+        <div class="mq-metric-title">Failure Diagnostics</div>
+        <div class="mq-metric-sub">TWF, HDF, PWF, OSF, RNF classification</div>
+      </div>
+      <div class="mq-metric-col">
+        <div class="mq-metric-num mq-gradient-text-teal">&lt; 15 ms</div>
+        <div class="mq-metric-title">Inference Latency</div>
+        <div class="mq-metric-sub">Real-time edge telemetry evaluation</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── Section A: The Problem ── -->
+<section class="mq-section" id="problem-section" aria-labelledby="problem-heading">
+  <div class="mq-container">
+
+    <div class="mq-section-header">
+      <span class="mq-tag mq-tag-violet">The Operational Reality</span>
+      <h2 class="mq-section-title" id="problem-heading">The High Cost of Unexpected Machine Failure</h2>
+      <p class="mq-section-desc">
+        Manufacturing plants routinely waste millions on reactive firefighting or rigid calendar schedules. Without
+        continuous predictive intelligence, catastrophic breakdowns are inevitable.
+      </p>
+    </div>
+
+    <div class="mq-problem-grid">
+      <!-- Problem 1 -->
+      <div class="mq-problem-card">
+        <div class="mq-problem-icon-wrap" aria-hidden="true">💥</div>
+        <h3>Catastrophic Breakdowns</h3>
+        <p>
+          Milling tools snap mid-cut, motor bearings seize from excessive resistance torque, or heat dissipation
+          fails—causing irreparable spindle and workpiece destruction.
+        </p>
+        <div class="mq-problem-stat-badge">
+          <span>⚠️ Average spindle repair: <strong>$12,000+</strong></span>
+        </div>
+      </div>
+
+      <!-- Problem 2 -->
+      <div class="mq-problem-card">
+        <div class="mq-problem-icon-wrap" aria-hidden="true">⏱️</div>
+        <h3>Unplanned Production Downtime</h3>
+        <p>
+          A sudden machine stop halts entire downstream assembly cells. Shifts sit idle, critical customer deliveries
+          are delayed, and emergency technician overtime multiplies overhead.
+        </p>
+        <div class="mq-problem-stat-badge">
+          <span>⚠️ Average factory line downtime: <strong>$22,000 / hr</strong></span>
+        </div>
+      </div>
+
+      <!-- Problem 3 -->
+      <div class="mq-problem-card">
+        <div class="mq-problem-icon-wrap" aria-hidden="true">📉</div>
+        <h3>Delayed Maintenance Decisions</h3>
+        <p>
+          Maintenance teams guess tool degradation by visual inspection or calendar days, either throwing out expensive
+          cutters with 40% life remaining or replacing them seconds too late.
+        </p>
+        <div class="mq-problem-stat-badge">
+          <span>⚠️ Suboptimal tooling scrap: <strong>~30% wasted life</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spotlight Banner with Image -->
+    <div class="mq-problem-banner">
+      <div class="mq-problem-banner-content">
+        <span class="mq-tag mq-tag-lime" style="margin-bottom: 12px;">The Predictive Advantage</span>
+        <h3 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 14px; color: var(--mq-text-primary);">
+          Transforming Reactive Chaos into Predictive Precision
+        </h3>
+        <p style="font-size: 0.95rem; color: var(--mq-text-secondary); line-height: 1.65; margin-bottom: 20px;">
+          Rather than waiting for smoke, loud vibrations, or mechanical fractures, MaintenIQ reads real-time operating
+          metrics to detect deteriorating conditions hours before failure occurs. This gives maintenance crews the exact
+          window needed to swap tools during scheduled shift breaks.
+        </p>
+        <a href="/predict" class="mq-btn-primary">
+          Check a Machine Now →
+        </a>
+      </div>
+      <div class="mq-problem-banner-img">
+        <img src="{{ url_for('static', filename='img/machine_failure_risk.jpg') }}"
+          alt="Industrial machine undergoing tool wear inspection" loading="lazy" />
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── Section B: How MaintenIQ Works (3-Step Visual Workflow) ── -->
+<section class="mq-section" id="how-it-works" aria-labelledby="workflow-heading">
+  <div class="mq-container">
+
+    <div class="mq-section-header">
+      <span class="mq-tag">Verified 3-Step Pipeline</span>
+      <h2 class="mq-section-title" id="workflow-heading">How MaintenIQ Predicts Machine Failure</h2>
+      <p class="mq-section-desc">
+        No guesswork or complex setup. MaintenIQ ingests standard operating conditions and translates them into
+        actionable engineering directives in milliseconds.
+      </p>
+    </div>
+
+    <div class="mq-workflow-steps">
+
+      <!-- Step 01 -->
+      <div class="mq-step-card">
+        <div class="mq-step-header">
+          <div class="mq-step-number">01</div>
+          <span class="mq-step-badge">Input Telemetry</span>
+        </div>
+        <h3>Ingest Operating Conditions</h3>
+        <p>
+          MaintenIQ takes six physical parameters from the machine: Material Type (L/M/H), Air &amp; Process Chamber
+          Temperatures, Spindle Rotational Speed, Cutting Torque, and Tool Wear Time.
+        </p>
+        <div class="mq-step-pill-list">
+          <span class="mq-step-pill">Air Temp (K)</span>
+          <span class="mq-step-pill">Process Temp (K)</span>
+          <span class="mq-step-pill">Speed (rpm)</span>
+          <span class="mq-step-pill">Torque (Nm)</span>
+          <span class="mq-step-pill">Tool Wear (min)</span>
+        </div>
+      </div>
+
+      <!-- Step 02 -->
+      <div class="mq-step-card">
+        <div class="mq-step-header">
+          <div class="mq-step-number"
+            style="color: var(--mq-violet-light); text-shadow: 0 0 14px var(--mq-violet-glow);">02</div>
+          <span class="mq-step-badge">Machine Learning</span>
+        </div>
+        <h3>Dual AI Inference Engine</h3>
+        <p>
+          A Decision Tree calibrated via 5-fold Platt Scaling evaluates failure probability against an optimized 0.05
+          operational threshold. Concurrently, a Multi-Output Random Forest isolates physical failure modes.
+        </p>
+        <div class="mq-step-pill-list">
+          <span class="mq-step-pill"
+            style="color:var(--mq-violet-light); border-color:rgba(168,85,247,0.3); background:rgba(168,85,247,0.08);">Platt
+            Scaling</span>
+          <span class="mq-step-pill"
+            style="color:var(--mq-violet-light); border-color:rgba(168,85,247,0.3); background:rgba(168,85,247,0.08);">Decision
+            Trees</span>
+          <span class="mq-step-pill"
+            style="color:var(--mq-violet-light); border-color:rgba(168,85,247,0.3); background:rgba(168,85,247,0.08);">Multi-Label
+            RF</span>
+        </div>
+      </div>
+
+      <!-- Step 03 -->
+      <div class="mq-step-card">
+        <div class="mq-step-header">
+          <div class="mq-step-number" style="color: var(--mq-lime); text-shadow: 0 0 14px var(--mq-lime-glow);">03</div>
+          <span class="mq-step-badge">Actionable Output</span>
+        </div>
+        <h3>Actionable Risk &amp; Diagnosis</h3>
+        <p>
+          Instant categorical risk tier (Low, Medium, High, Critical), exact failure probability percentage, identified
+          failure mode diagnosis, and explicit preventive inspection recommendations.
+        </p>
+        <div class="mq-step-pill-list">
+          <span class="mq-step-pill"
+            style="color:var(--mq-lime); border-color:rgba(163,230,53,0.3); background:rgba(163,230,53,0.08);">Low / Med
+            / High / Critical</span>
+          <span class="mq-step-pill"
+            style="color:var(--mq-lime); border-color:rgba(163,230,53,0.3); background:rgba(163,230,53,0.08);">Diagnostic
+            Modes</span>
+          <span class="mq-step-pill"
+            style="color:var(--mq-lime); border-color:rgba(163,230,53,0.3); background:rgba(163,230,53,0.08);">Maintenance
+            Advice</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── Section C: Meet the Intelligence (Feature Matrix) ── -->
+<section class="mq-section" id="features-section" aria-labelledby="features-heading">
+  <div class="mq-container">
+
+    <div class="mq-section-header">
+      <span class="mq-tag mq-tag-violet">System Capabilities</span>
+      <h2 class="mq-section-title" id="features-heading">Meet the Machine Intelligence</h2>
+      <p class="mq-section-desc">
+        MaintenIQ combines probabilistic machine learning with industrial physical principles to deliver verified,
+        interpretable reliability diagnostics.
+      </p>
+    </div>
+
+    <div class="mq-feature-grid">
+
+      <!-- Feature 1 -->
+      <div class="mq-feature-card featured">
+        <div class="mq-feature-icon mq-icon-teal">⚡</div>
+        <h3>Failure Risk Prediction</h3>
+        <p>
+          Calibrated probabilistic scoring evaluates operational conditions against benchmark patterns, generating
+          accurate failure likelihood percentages in under 15 milliseconds.
+        </p>
+        <a href="/predict" class="mq-feature-link">
+          Open Machine Assessor →
+        </a>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="mq-feature-card">
+        <div class="mq-feature-icon mq-icon-lime">🔬</div>
+        <h3>Machine Health &amp; Physics Insights</h3>
+        <p>
+          Calculates real-world physical parameters including mechanical power consumption (P = τ · ω), thermal
+          dissipation delta (ΔT = Tproc - Tair), and tool strain factors.
+        </p>
+        <a href="#interactive-preview" class="mq-feature-link">
+          Test Physics Telemetry →
+        </a>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="mq-feature-card">
+        <div class="mq-feature-icon mq-icon-violet">🩺</div>
+        <h3>Multi-Label Failure Diagnostics</h3>
+        <p>
+          Identifies specific root causes from operating profiles: Tool Wear Failure (TWF), Heat Dissipation (HDF),
+          Power Failure (PWF), Overstrain (OSF), and Random Failure (RNF).
+        </p>
+        <a href="/predict" class="mq-feature-link">
+          Inspect Diagnostic Modes →
+        </a>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="mq-feature-card">
+        <div class="mq-feature-icon mq-icon-teal">🛡️</div>
+        <h3>Preventive Maintenance Prioritization</h3>
+        <p>
+          Automatically flags equipment at or above 35% estimated failure probability for proactive maintenance
+          inspection, preventing catastrophic failures before they occur.
+        </p>
+        <a href="#priority-fleet" class="mq-feature-link">
+          View Inspection Priority →
+        </a>
+      </div>
+
+      <!-- Feature 5 -->
+      <div class="mq-feature-card">
+        <div class="mq-feature-icon mq-icon-violet">🧠</div>
+        <h3>Explainable Model Intelligence</h3>
+        <p>
+          Inspect local decision tree attribution and permutation feature importance to understand exactly which sensor
+          variable drove the machine's risk score.
+        </p>
+        <a href="/statistics" class="mq-feature-link">
+          Explore Model Analytics →
+        </a>
+      </div>
+
+      <!-- Feature 6 -->
+      <div class="mq-feature-card">
+        <div class="mq-feature-icon mq-icon-lime">📡</div>
+        <h3>Live Telemetry Stream Simulation</h3>
+        <p>
+          Experience realistic real-time sensor streams simulating continuous random walk, thermal stress, mechanical
+          overstrain, and cutter degradation over time.
+        </p>
+        <a href="/live" class="mq-feature-link">
+          Launch Live Monitor →
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── Section D: Interactive Machine Intelligence Sandbox ── -->
+<section class="mq-section" id="interactive-preview" aria-labelledby="sandbox-heading">
+  <div class="mq-container">
+
+    <div class="mq-section-header">
+      <span class="mq-tag mq-tag-lime">Real-Time Simulation Sandbox</span>
+      <h2 class="mq-section-title" id="sandbox-heading">Interactive Machine Intelligence Preview</h2>
+      <p class="mq-section-desc">
+        Adjust machine operating conditions or test real industrial scenarios. The sandbox interacts directly with
+        MaintenIQ's machine learning backend to compute risk in real-time.
+      </p>
+    </div>
+
+    <div class="mq-sandbox-wrapper">
+
+      <!-- Scenario Presets Bar -->
+      <div class="mq-sandbox-presets" role="toolbar" aria-label="Operating condition presets">
+        <span
+          style="font-size:0.82rem; font-weight:700; color:var(--mq-text-muted); text-transform:uppercase; margin-right:6px;">Presets:</span>
+        <button type="button" class="mq-preset-btn active" data-preset="normal">
+          ✅ Normal Steady State
+        </button>
+        <button type="button" class="mq-preset-btn" data-preset="thermal">
+          🔥 Thermal Stress (HDF)
+        </button>
+        <button type="button" class="mq-preset-btn" data-preset="overstrain">
+          ⚙️ Mechanical Overstrain (OSF)
+        </button>
+        <button type="button" class="mq-preset-btn" data-preset="power">
+          ⚡ Power Surge (PWF)
+        </button>
+        <button type="button" class="mq-preset-btn" data-preset="wear">
+          ⏳ Severe Tool Wear (TWF)
+        </button>
+      </div>
+
+      <div class="mq-sandbox-grid">
+
+        <!-- Left: Sliders & Inputs -->
+        <div class="mq-slider-stack">
+
+          <!-- Machine Type -->
+          <div class="mq-slider-item">
+            <div class="mq-slider-header">
+              <span class="mq-slider-label">🏭 Machine Quality Grade</span>
+            </div>
+            <div class="mq-type-selector">
+              <button type="button" class="mq-type-pill active" data-type="L">
+                L (Standard - 50%)
+              </button>
+              <button type="button" class="mq-type-pill" data-type="M">
+                M (Medium - 30%)
+              </button>
+              <button type="button" class="mq-type-pill" data-type="H">
+                H (Heavy-Duty - 20%)
+              </button>
+            </div>
+          </div>
+
+          <!-- Rotational Speed -->
+          <div class="mq-slider-item">
+            <div class="mq-slider-header">
+              <label for="sb-speed" class="mq-slider-label">🔄 Spindle Speed</label>
+              <span class="mq-slider-val" id="sb-val-speed">1,551 rpm</span>
+            </div>
+            <input type="range" id="sb-speed" class="mq-slider-input" min="1180" max="2880" step="10" value="1551" />
+            <div class="mq-slider-bounds">
+              <span>Min: 1,180 rpm</span>
+              <span>Typical: 1,300 - 1,800 rpm</span>
+              <span>Max: 2,880 rpm</span>
+            </div>
+          </div>
+
+          <!-- Cutting Torque -->
+          <div class="mq-slider-item">
+            <div class="mq-slider-header">
+              <label for="sb-torque" class="mq-slider-label">🔩 Resistance Torque</label>
+              <span class="mq-slider-val" id="sb-val-torque">42.8 Nm</span>
+            </div>
+            <input type="range" id="sb-torque" class="mq-slider-input" min="5" max="75" step="0.5" value="42.8" />
+            <div class="mq-slider-bounds">
+              <span>Min: 5 Nm</span>
+              <span>Typical: 25 - 55 Nm</span>
+              <span>Max: 75 Nm</span>
+            </div>
+          </div>
+
+          <!-- Tool Wear -->
+          <div class="mq-slider-item">
+            <div class="mq-slider-header">
+              <label for="sb-wear" class="mq-slider-label">⏱️ Tool Wear Duration</label>
+              <span class="mq-slider-val" id="sb-val-wear">20 min</span>
+            </div>
+            <input type="range" id="sb-wear" class="mq-slider-input" min="0" max="250" step="1" value="20" />
+            <div class="mq-slider-bounds">
+              <span>0 min (Fresh Insert)</span>
+              <span>Advisory Threshold: ~180 min</span>
+              <span>250 min (Critical)</span>
+            </div>
+          </div>
+
+          <!-- Temperatures row -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div class="mq-slider-item">
+              <div class="mq-slider-header">
+                <label for="sb-air-temp" class="mq-slider-label" style="font-size:0.82rem;">🌡️ Air Temp</label>
+                <span class="mq-slider-val" id="sb-val-air" style="font-size:0.9rem;">298.1 K</span>
+              </div>
+              <input type="range" id="sb-air-temp" class="mq-slider-input" min="295" max="305" step="0.1"
+                value="298.1" />
+            </div>
+
+            <div class="mq-slider-item">
+              <div class="mq-slider-header">
+                <label for="sb-proc-temp" class="mq-slider-label" style="font-size:0.82rem;">🔥 Process Temp</label>
+                <span class="mq-slider-val" id="sb-val-proc" style="font-size:0.9rem;">308.6 K</span>
+              </div>
+              <input type="range" id="sb-proc-temp" class="mq-slider-input" min="305" max="315" step="0.1"
+                value="308.6" />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Real-time Output & Diagnostic Telemetry -->
+        <div class="mq-sandbox-output-panel" role="region" aria-label="Real-time model evaluation results">
+
+          <div class="mq-risk-display-header">
+            <span class="mq-risk-title">Estimated Machine Failure Risk</span>
+            <span class="mq-risk-badge low" id="sb-risk-badge">Low Risk</span>
+          </div>
+
+          <div>
+            <div class="mq-prob-readout">
+              <span class="mq-prob-big-val" id="sb-prob-val">1.4%</span>
+              <span class="mq-prob-sub" id="sb-prob-sub">Healthy nominal operating state.</span>
+            </div>
+            <div class="mq-prob-bar-track" style="margin-top: 14px;">
+              <div class="mq-prob-bar-fill" id="sb-prob-fill" style="width: 1.4%; background-color: var(--mq-lime);">
+              </div>
+            </div>
+          </div>
+
+          <!-- Physics Check Strip -->
+          <div class="mq-physics-strip">
+            <div class="mq-physics-item">
+              <span class="mq-physics-lbl">Calculated Power</span>
+              <span class="mq-physics-val" id="sb-power-val">6,957 W</span>
+            </div>
+            <div class="mq-physics-item">
+              <span class="mq-physics-lbl">Thermal Dissipation (ΔT)</span>
+              <span class="mq-physics-val" id="sb-deltat-val">10.5 K</span>
+            </div>
+            <div class="mq-physics-item">
+              <span class="mq-physics-lbl">Wear × Torque</span>
+              <span class="mq-physics-val" id="sb-strain-val">856</span>
+            </div>
+          </div>
+
+          <!-- Active Diagnostics Box -->
+          <div class="mq-diagnostics-box" id="sb-diag-summary">
+            <div class="mq-diagnostics-box-title">✅ Diagnostics Nominal</div>
+            <p style="color: var(--mq-text-secondary); margin:0;">
+              No specific failure modes (TWF, HDF, PWF, OSF, RNF) triggered at current operational setpoints.
+            </p>
+            <div id="sb-diag-tags" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+          </div>
+
+          <!-- CTA to full prediction page -->
+          <div style="margin-top:auto;">
+            <a href="/predict" class="mq-btn-primary" style="width: 100%; justify-content: center;" id="sb-cta-inspect">
+              Run Full Diagnostic Assessment →
+            </a>
+            <div style="text-align: center; margin-top: 8px; font-size: 0.78rem; color: var(--mq-text-muted);">
+              Transfers these exact telemetry readings into the full explanation engine
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── Section E: Why MaintenIQ? (Split-Screen Comparison) ── -->
+<section class="mq-section" id="comparison-section" aria-labelledby="comp-heading">
+  <div class="mq-container">
+
+    <div class="mq-section-header">
+      <span class="mq-tag mq-tag-violet">Strategic Comparison</span>
+      <h2 class="mq-section-title" id="comp-heading">Why Predictive Maintenance?</h2>
+      <p class="mq-section-desc">
+        A clear side-by-side comparison between the conventional run-to-failure cycle and MaintenIQ's proactive machine
+        intelligence.
+      </p>
+    </div>
+
+    <div class="mq-comparison-split">
+
+      <!-- Reactive Approach -->
+      <div class="mq-comp-card mq-comp-reactive">
+        <div class="mq-comp-header">
+          <div class="mq-comp-icon" aria-hidden="true">❌</div>
+          <div>
+            <span style="font-size:0.75rem; text-transform:uppercase; color:var(--mq-crimson); font-weight:700;">Legacy
+              Strategy</span>
+            <h3>Reactive Maintenance</h3>
+          </div>
+        </div>
+
+        <ul class="mq-comp-list">
+          <li>
+            <span class="mq-list-icon" aria-hidden="true">🔴</span>
+            <div><strong>Run to breakdown:</strong> Machines are pushed until catastrophic tool fracture, smoke, or
+              spindle seizure forces an emergency stop.</div>
+          </li>
+          <li>
+            <span class="mq-list-icon" aria-hidden="true">🔴</span>
+            <div><strong>Unplanned interruptions:</strong> Failures occur in the middle of crucial production shifts,
+              stalling schedules and causing severe throughput loss.</div>
+          </li>
+          <li>
+            <span class="mq-list-icon" aria-hidden="true">🔴</span>
+            <div><strong>Secondary tooling damage:</strong> Broken cutting inserts damage the workpiece, toolholder, and
+              precision CNC spindle bearings.</div>
+          </li>
+          <li>
+            <span class="mq-list-icon" aria-hidden="true">🔴</span>
+            <div><strong>Rush repair expenses:</strong> Factories pay premium expedite fees for emergency replacement
+              parts and unscheduled technician overtime.</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Predictive Approach -->
+      <div class="mq-comp-card mq-comp-predictive">
+        <div class="mq-comp-header">
+          <div class="mq-comp-icon" aria-hidden="true">✨</div>
+          <div>
+            <span
+              style="font-size:0.75rem; text-transform:uppercase; color:var(--mq-teal); font-weight:700;">Intelligent
+              Strategy</span>
+            <h3>MaintenIQ Predictive AI</h3>
+          </div>
+        </div>
+
+        <ul class="mq-comp-list">
+          <li>
+            <span class="mq-list-icon" aria-hidden="true">🟢</span>
+            <div><strong>Early warning flags:</strong> Estimates probability of failure and identifies concerning
+              operating conditions hours ahead of mechanical failure.</div>
+          </li>
+          <li>
+            <span class="mq-list-icon" aria-hidden="true">🟢</span>
+            <div><strong>Scheduled off-shift servicing:</strong> Routine tool swaps and lubrications are planned during
+              shift changeovers, achieving zero unforced line downtime.</div>
+          </li>
+          <li>
+            <span class="mq-list-icon" aria-hidden="true">🟢</span>
+            <div><strong>Extended component lifespan:</strong> Maximizes cutter utilization without ever pushing tooling
+              past the catastrophic 200-240 min wear danger boundary.</div>
+          </li>
+          <li>
+            <span class="mq-list-icon" aria-hidden="true">🟢</span>
+            <div><strong>Root cause failure diagnostics:</strong> Classifies whether the risk stems from thermal
+              dissipation deficit, mechanical overstrain, or power surge.</div>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── Section F: Project Intelligence & Model Insights ── -->
+<section class="mq-section" id="model-insights" aria-labelledby="model-heading">
+  <div class="mq-container">
+
+    <div class="mq-section-header">
+      <span class="mq-tag">Technical Depth</span>
+      <h2 class="mq-section-title" id="model-heading">Project Intelligence &amp; Model Analytics</h2>
+      <p class="mq-section-desc">
+        Engineered with scientific rigor. Explore the calibrated Decision Tree pipeline, cross-validation metrics, and
+        permutation feature importance.
+      </p>
+    </div>
+
+    <div class="mq-model-insights-panel">
+
+      <!-- Tabs Header -->
+      <div class="mq-tabs-header" role="tablist">
+        <button type="button" class="mq-tab-btn active" data-tab="tab-selected" role="tab" aria-selected="true"
+          aria-controls="tab-selected">
+          ⭐ Selected Model (Decision Tree)
+        </button>
+        <button type="button" class="mq-tab-btn" data-tab="tab-comparison" role="tab" aria-selected="false"
+          aria-controls="tab-comparison">
+          📊 5-Fold Model Comparison
+        </button>
+        <button type="button" class="mq-tab-btn" data-tab="tab-importance" role="tab" aria-selected="false"
+          aria-controls="tab-importance">
+          📈 Permutation Feature Importance
+        </button>
+        <button type="button" class="mq-tab-btn" data-tab="tab-diagnostics" role="tab" aria-selected="false"
+          aria-controls="tab-diagnostics">
+          🩺 Multi-Label Diagnostics Coverage
+        </button>
+      </div>
+
+      <!-- Tab 1: Selected Model -->
+      <div class="mq-tab-content active" id="tab-selected" role="tabpanel">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start;">
+          <div>
+            <h4 style="font-size:1.2rem; font-weight:700; color:var(--mq-text-primary); margin-bottom:12px;">
+              Calibrated Decision Tree Classifier
+            </h4>
+            <p style="font-size:0.92rem; color:var(--mq-text-secondary); line-height:1.65; margin-bottom:18px;">
+              The selected primary model achieves a balanced <strong>77.9% recall</strong> on minority failure cases and
+              <strong>97.15% test accuracy</strong>. To produce reliable probabilities, it is calibrated using
+              <strong>Platt Scaling (Sigmoid via 5-fold cross-validation)</strong> with a tuned operational threshold of
+              <strong>0.05</strong>.
+            </p>
+
+            <div class="mq-table-responsive">
+              <table class="mq-tech-table">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                    <th>Benchmark Meaning</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Test Accuracy</strong></td>
+                    <td style="color:var(--mq-teal); font-family:monospace; font-weight:700;">97.15%</td>
+                    <td>Overall correct predictions on 2,000 holdout records</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Recall (True Positive Rate)</strong></td>
+                    <td style="color:var(--mq-lime); font-family:monospace; font-weight:700;">77.94%</td>
+                    <td>Catches ~78% of all true machine failure events</td>
+                  </tr>
+                  <tr>
+                    <td><strong>ROC-AUC</strong></td>
+                    <td style="color:var(--mq-violet-light); font-family:monospace; font-weight:700;">0.8851</td>
+                    <td>Strong separation between safe vs failing machines</td>
+                  </tr>
+                  <tr>
+                    <td><strong>F1-Score</strong></td>
+                    <td style="font-family:monospace; font-weight:700;">65.03%</td>
+                    <td>Harmonic mean of precision and recall at 0.05 threshold</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Brier Score</strong></td>
+                    <td style="font-family:monospace; font-weight:700;">0.0158</td>
+                    <td>Quantifies probability calibration sharpness</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div
+            style="background:var(--mq-bg-surface-2); border:1px solid var(--mq-border-subtle); border-radius:18px; padding:24px;">
+            <h5 style="font-size:0.95rem; font-weight:700; color:var(--mq-text-primary); margin-bottom:10px;">
+              Why Decision Trees with Platt Calibration?
+            </h5>
+            <p style="font-size:0.88rem; color:var(--mq-text-secondary); line-height:1.6; margin-bottom:14px;">
+              In industrial engineering environments, "black-box" predictions are often rejected by certified safety
+              engineers. The Decision Tree architecture produces a verified decision path that can be traced back to
+              exact physical split rules (e.g. <em>Torque &gt; 65.2 Nm</em> or <em>Tool Wear &gt; 198 min</em>).
+            </p>
+            <div
+              style="padding:12px 16px; border-radius:10px; background:rgba(0,242,254,0.06); border:1px solid rgba(0,242,254,0.2); font-size:0.84rem; color:var(--mq-teal);">
+              💡 <strong>Explainability:</strong> Full tree branch attribution is accessible in the <a href="/predict"
+                style="color:#fff; text-decoration:underline;">Machine Checker</a> for every prediction.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Model Comparison -->
+      <div class="mq-tab-content" id="tab-comparison" role="tabpanel">
+        <p style="font-size:0.92rem; color:var(--mq-text-secondary); margin-bottom:18px;">
+          5-Fold Stratified Cross-Validation on the AI4I 2020 Training Set, sorted by F1-Score descending:
+        </p>
+
+        <div class="mq-table-responsive">
+          <table class="mq-tech-table">
+            <thead>
+              <tr>
+                <th>Model Architecture</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1-Score</th>
+                <th>ROC-AUC</th>
+                <th>Selection Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if model_comparison and model_comparison.results %}
+              {% for r in model_comparison.results %}
+              <tr class="{% if r.selected %}selected-row{% endif %}">
+                <td>
+                  <strong>{{ r.model }}</strong>
+                  {% if r.selected %}
+                  <span class="mq-step-pill" style="margin-left:8px; font-size:0.7rem;">SELECTED</span>
+                  {% endif %}
+                </td>
+                <td style="font-family:monospace;">{{ (r.precision * 100)|round(1) }}%</td>
+                <td style="font-family:monospace;">{{ (r.recall * 100)|round(1) }}%</td>
+                <td
+                  style="font-family:monospace; font-weight:700; color: {% if r.selected %}var(--mq-teal){% else %}var(--mq-text-primary){% endif %};">
+                  {{ (r.f1_score * 100)|round(1) }}%
+                </td>
+                <td style="font-family:monospace;">{{ (r.roc_auc)|round(4) }}</td>
+                <td>
+                  {% if r.selected %}
+                  <span style="color:var(--mq-lime); font-weight:600;">✓ Deployed</span>
+                  {% else %}
+                  <span style="color:var(--mq-text-muted);">Evaluated</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+              {% else %}
+              <tr class="selected-row">
+                <td><strong>Decision Tree</strong> <span class="mq-step-pill" style="margin-left:8px;">SELECTED</span>
+                </td>
+                <td style="font-family:monospace;">70.4%</td>
+                <td style="font-family:monospace;">57.2%</td>
+                <td style="font-family:monospace; font-weight:700; color:var(--mq-teal);">62.8%</td>
+                <td style="font-family:monospace;">0.7817</td>
+                <td><span style="color:var(--mq-lime);">✓ Deployed</span></td>
+              </tr>
+              <tr>
+                <td><strong>Random Forest</strong></td>
+                <td style="font-family:monospace;">91.1%</td>
+                <td style="font-family:monospace;">36.5%</td>
+                <td style="font-family:monospace;">52.0%</td>
+                <td style="font-family:monospace;">0.9660</td>
+                <td><span style="color:var(--mq-text-muted);">Evaluated</span></td>
+              </tr>
+              <tr>
+                <td><strong>KNN</strong></td>
+                <td style="font-family:monospace;">79.5%</td>
+                <td style="font-family:monospace;">31.7%</td>
+                <td style="font-family:monospace;">45.2%</td>
+                <td style="font-family:monospace;">0.8471</td>
+                <td><span style="color:var(--mq-text-muted);">Evaluated</span></td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 3: Feature Importance -->
+      <div class="mq-tab-content" id="tab-importance" role="tabpanel">
+        <p style="font-size:0.92rem; color:var(--mq-text-secondary); margin-bottom:18px;">
+          Permutation Feature Importance on holdout test set (scoring = ROC-AUC, 10 repeats). Measures how much each
+          sensor reading directly influences failure prediction:
+        </p>
+
+        <div class="mq-fi-list">
+          <div class="mq-fi-item">
+            <div class="mq-fi-header">
+              <span class="mq-fi-name">🔄 Rotational speed [rpm]</span>
+              <span class="mq-fi-val">+0.1456 Δ ROC-AUC</span>
+            </div>
+            <div class="mq-fi-track">
+              <div class="mq-fi-bar" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="mq-fi-item">
+            <div class="mq-fi-header">
+              <span class="mq-fi-name">🔩 Torque [Nm]</span>
+              <span class="mq-fi-val">+0.1118 Δ ROC-AUC</span>
+            </div>
+            <div class="mq-fi-track">
+              <div class="mq-fi-bar" style="width: 76%;"></div>
+            </div>
+          </div>
+
+          <div class="mq-fi-item">
+            <div class="mq-fi-header">
+              <span class="mq-fi-name">🌡️ Air temperature [K]</span>
+              <span class="mq-fi-val">+0.0960 Δ ROC-AUC</span>
+            </div>
+            <div class="mq-fi-track">
+              <div class="mq-fi-bar" style="width: 66%;"></div>
+            </div>
+          </div>
+
+          <div class="mq-fi-item">
+            <div class="mq-fi-header">
+              <span class="mq-fi-name">⏱️ Tool wear [min]</span>
+              <span class="mq-fi-val">+0.0492 Δ ROC-AUC</span>
+            </div>
+            <div class="mq-fi-track">
+              <div class="mq-fi-bar" style="width: 34%;"></div>
+            </div>
+          </div>
+
+          <div class="mq-fi-item">
+            <div class="mq-fi-header">
+              <span class="mq-fi-name">🏭 Machine Type (L, M, H)</span>
+              <span class="mq-fi-val">+0.0203 Δ ROC-AUC</span>
+            </div>
+            <div class="mq-fi-track">
+              <div class="mq-fi-bar" style="width: 14%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px; font-size:0.84rem; color:var(--mq-text-muted);">
+          Note: Rotational speed and Torque represent the highest mechanical variance contributors due to extreme torque
+          overstrain and high-speed power surge failure modes.
+        </div>
+      </div>
+
+      <!-- Tab 4: Diagnostics Coverage -->
+      <div class="mq-tab-content" id="tab-diagnostics" role="tabpanel">
+        <p style="font-size:0.92rem; color:var(--mq-text-secondary); margin-bottom:18px;">
+          Multi-Output Random Forest trained on verified physical failure mechanisms from the AI4I 2020 dataset (Exact
+          Match Accuracy: <strong>97.7%</strong>, Hamming Loss: <strong>0.0046</strong>):
+        </p>
+
+        <div class="mq-table-responsive">
+          <table class="mq-tech-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Failure Mechanism</th>
+                <th>Threshold</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>Physical Trigger Condition</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="mq-step-pill" style="border-color:var(--mq-teal); color:var(--mq-teal);">HDF</span>
+                </td>
+                <td><strong>Heat Dissipation Failure</strong></td>
+                <td style="font-family:monospace;">0.35</td>
+                <td style="font-family:monospace; color:var(--mq-lime);">85.7%</td>
+                <td style="font-family:monospace; color:var(--mq-lime);">70.6%</td>
+                <td>ΔT (Process - Air) &lt; 8.6 K and Rotational Speed &lt; 1,380 rpm</td>
+              </tr>
+              <tr>
+                <td><span class="mq-step-pill"
+                    style="border-color:var(--mq-violet-light); color:var(--mq-violet-light);">PWF</span></td>
+                <td><strong>Power Failure</strong></td>
+                <td style="font-family:monospace;">0.20</td>
+                <td style="font-family:monospace;">68.0%</td>
+                <td style="font-family:monospace; color:var(--mq-lime);">85.0%</td>
+                <td>Mechanical power P = Torque × ω &lt; 3,500 W or &gt; 9,000 W</td>
+              </tr>
+              <tr>
+                <td><span class="mq-step-pill" style="border-color:var(--mq-crimson); color:#fca5a5;">OSF</span></td>
+                <td><strong>Overstrain Failure</strong></td>
+                <td style="font-family:monospace;">0.35</td>
+                <td style="font-family:monospace; color:var(--mq-lime);">85.7%</td>
+                <td style="font-family:monospace;">66.7%</td>
+                <td>Product of Tool wear × Torque exceeds machine strain limit</td>
+              </tr>
+              <tr>
+                <td><span class="mq-step-pill">TWF</span></td>
+                <td><strong>Tool Wear Failure</strong></td>
+                <td style="font-family:monospace;">0.15</td>
+                <td style="font-family:monospace;">33.3%</td>
+                <td style="font-family:monospace;">27.3%</td>
+                <td>Tool wear reaches 200–240 min boundary under cutting load</td>
+              </tr>
+              <tr>
+                <td><span class="mq-step-pill"
+                    style="border-color:var(--mq-text-muted); color:var(--mq-text-muted);">RNF</span></td>
+                <td><strong>Random Failure</strong></td>
+                <td style="font-family:monospace;">0.50</td>
+                <td style="font-family:monospace;">0.0%</td>
+                <td style="font-family:monospace;">0.0%</td>
+                <td>0.1% uniform noise in dataset (documented unlearnable baseline)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── Section G: Scored Example Fleet Priority Table ── -->
+<section class="mq-machines-section" id="priority-fleet" aria-labelledby="fleet-heading">
+  <div class="mq-container">
+
+    <div class="mq-section-header text-left" style="margin-bottom: 32px;">
+      <span class="mq-tag mq-tag-teal">Startup Telemetry Fleet</span>
+      <h2 class="mq-section-title" id="fleet-heading">Equipment Inspection Priority Fleet</h2>
+      <p class="mq-section-desc">
+        The eight demonstration records below (EX-001 through EX-008) are scored by the model at system initialization
+        and ranked by failure probability. High and Critical machines require urgent preventive inspection.
+      </p>
+    </div>
+
+    <!-- Stats Row in Dark Theme -->
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px;">
+      <div
+        style="background:var(--mq-bg-surface-1); border:1px solid var(--mq-border-subtle); border-radius:16px; padding:20px 24px;">
+        <div style="font-size:0.75rem; text-transform:uppercase; color:var(--mq-text-muted); font-weight:700;">
+          Demonstration Records</div>
+        <div style="font-size:2.2rem; font-weight:800; font-family:monospace; color:var(--mq-teal); margin:4px 0;">{{ total_machines }}</div>
+        <div style="font-size:0.8rem; color:var(--mq-text-dim);">Scored at server startup</div>
+      </div>
+
+      <div
+        style="background:var(--mq-bg-surface-1); border:1px solid rgba(239,68,68,0.3); border-radius:16px; padding:20px 24px;">
+        <div style="font-size:0.75rem; text-transform:uppercase; color:var(--mq-crimson); font-weight:700;">Flagged For
+          Inspection</div>
+        <div style="font-size:2.2rem; font-weight:800; font-family:monospace; color:var(--mq-crimson); margin:4px 0;">{{ high_risk_count }}</div>
+        <div style="font-size:0.8rem; color:var(--mq-text-dim);">High or Critical risk (&ge; 35% probability)</div>
+      </div>
+
+      <div
+        style="background:var(--mq-bg-surface-1); border:1px solid rgba(163,230,53,0.3); border-radius:16px; padding:20px 24px;">
+        <div style="font-size:0.75rem; text-transform:uppercase; color:var(--mq-lime); font-weight:700;">Operating
+          Normally</div>
+        <div style="font-size:2.2rem; font-weight:800; font-family:monospace; color:var(--mq-lime); margin:4px 0;">{{ total_machines - high_risk_count }}</div>
+        <div style="font-size:0.8rem; color:var(--mq-text-dim);">Low or Medium risk status</div>
+      </div>
+    </div>
+
+    <!-- Machines Priority Table -->
+    <div class="mq-table-responsive" tabindex="0" role="region" aria-label="Machine inspection priority table">
+      <table class="mq-tech-table" id="machines-table">
+        <thead>
+          <tr>
+            <th scope="col">Machine ID</th>
+            <th scope="col">Grade</th>
+            <th scope="col">Air Temp (K)</th>
+            <th scope="col">Process Temp (K)</th>
+            <th scope="col">Speed (rpm)</th>
+            <th scope="col">Torque (Nm)</th>
+            <th scope="col">Tool Wear (min)</th>
+            <th scope="col">Failure Probability</th>
+            <th scope="col">Risk Level</th>
+            <th scope="col">Quick Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in machines %}
+          <tr>
+            <td><span class="mq-machine-row-id">{{ m.id }}</span></td>
+            <td><span class="mq-step-badge">{{ m.Type }}</span></td>
+            <td style="font-family:monospace;">{{ m['Air temperature [K]'] }}</td>
+            <td style="font-family:monospace;">{{ m['Process temperature [K]'] }}</td>
+            <td style="font-family:monospace;">{{ m['Rotational speed [rpm]'] }}</td>
+            <td style="font-family:monospace;">{{ m['Torque [Nm]'] }}</td>
+            <td style="font-family:monospace;">{{ m['Tool wear [min]'] }}</td>
+            <td>
+              <div class="mq-table-prob-wrapper">
+                <div class="mq-table-prob-track">
+                  <div class="mq-table-prob-fill" style="width:{{ m.failure_probability_pct }}%; background-color:{{ m.colour }};"></div>
+                </div>
+                <span style="font-family:monospace; font-weight:700; color:var(--mq-text-primary);">
+                  {{ m.failure_probability_pct }}%
+                </span>
+              </div>
+            </td>
+            <td>
+              <span class="mq-risk-badge {{ m.level }}">
+                {{ m.label }}
+              </span>
+            </td>
+            <td>
+              <a href="/predict?type={{ m.Type }}&amp;air={{ m['Air temperature [K]'] }}&amp;proc={{ m['Process temperature [K]'] }}&amp;speed={{ m['Rotational speed [rpm]'] }}&amp;torque={{ m['Torque [Nm]'] }}&amp;wear={{ m['Tool wear [min]'] }}&amp;autocheck=1"
+                class="mq-btn-outline" style="padding: 4px 10px; font-size: 0.78rem;">
+                Inspect →
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ── Section H: Final Call to Action ── -->
+<section class="mq-final-cta-section" aria-labelledby="cta-heading">
+  <div class="mq-container">
+
+    <div class="mq-final-cta-box">
+      <span class="mq-tag" style="margin-bottom: 20px;">Take Proactive Control</span>
+      <h2 class="mq-final-cta-headline" id="cta-heading">Don't Wait for the Breakdown.</h2>
+      <p class="mq-final-cta-sub">
+        Explore machine conditions, understand estimated failure risk, and make more informed maintenance decisions
+        before costly factory halts occur.
+      </p>
+
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="/predict" class="mq-btn-primary" style="font-size: 1.05rem; padding: 16px 32px;"
+          id="btn-final-predict">
+          ⚡ Check My Machine
+        </a>
+        <a href="/live" class="mq-btn-secondary" style="font-size: 1.05rem; padding: 16px 30px;" id="btn-final-live">
+          <span class="mq-pulse-dot" aria-hidden="true"></span> Launch Live Monitor
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+
+<!-- ── Override Footer with High-Impact Dark Industrial Design ── -->
+{% block footer %}
+<footer class="mq-dark-footer">
+  <div class="mq-container">
+    <div class="mq-footer-grid">
+
+      <!-- Col 1: Brand -->
+      <div class="mq-footer-brand">
+        <h4>⚙ MaintenIQ</h4>
+        <p>
+          Industrial Machine Failure Intelligence &amp; Multi-Label Diagnostics platform. Built with calibrated
+          machine-learning pipelines to protect high-value manufacturing assets.
+        </p>
+      </div>
+
+      <!-- Col 2: Navigation -->
+      <div class="mq-footer-col">
+        <h5>Platform Navigation</h5>
+        <ul class="mq-footer-links">
+          <li><a href="/">Dashboard Overview</a></li>
+          <li><a href="/predict">Check a Machine</a></li>
+          <li><a href="/live">Live Telemetry Monitor</a></li>
+          <li><a href="/statistics">Model Analytics &amp; Statistics</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Research Benchmark -->
+      <div class="mq-footer-col">
+        <h5>Industrial Benchmark</h5>
+        <ul class="mq-footer-links">
+          <li>
+            <a href="https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset" target="_blank"
+              rel="noopener">
+              AI4I 2020 Dataset (UCI) ↗
+            </a>
+          </li>
+          <li><a href="/statistics#notebook-section">Jupyter Capstone Notebook</a></li>
+          <li><a href="/predict">Explainable AI Attribution</a></li>
+          <li><a href="/api/model-info" target="_blank">Model Metadata JSON API ↗</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Project Info -->
+      <div class="mq-footer-col">
+        <h5>Project Details</h5>
+        <p style="font-size:0.85rem; color:var(--mq-text-muted); line-height:1.6; margin-bottom:12px;">
+          B.Tech CSE Data Science Project — Predictive Maintenance Intelligence &amp; Diagnostics.
+        </p>
+        <div class="mq-tag" style="font-size:0.7rem; padding:4px 10px;">
+          Scikit-Learn · Flask · Platt Scaling
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Disclaimer Bar -->
+    <div class="mq-footer-bottom">
+      <div>
+        &copy; 2026 MaintenIQ Predictive Maintenance Intelligence.
+      </div>
+      <div>
+        Benchmarked on the synthetic AI4I 2020 dataset (Matanovic et al.). Academic demonstration; not for certified
+        life-safety decisions.
+      </div>
+    </div>
+  </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

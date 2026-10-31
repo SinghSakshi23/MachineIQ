@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Live Monitor{% endblock %}
+{% block meta_description %}Simulated live machine sensor stream with real-time predictive failure assessment and multi-label diagnostics.{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Page Header ── -->
+<section class="page-hero--light" aria-labelledby="live-heading">
+  <div class="container">
+    <div class="stream-header-row">
+      <div>
+        <div class="section-label">Real-Time Telemetry</div>
+        <h1 id="live-heading">Live Machine Monitor</h1>
+        <p>
+          Stream synthetic sensor telemetry to the MaintenIQ model to observe real-time
+          risk scoring, dynamic threshold warnings, and failure-mode diagnostics.
+        </p>
+      </div>
+      <div class="simulation-badge-container">
+        <span class="simulated-pill" id="sim-watermark" title="Synthetic streaming data generated for demonstration purposes">
+          <span class="pulse-dot active" aria-hidden="true"></span>
+          SIMULATED DATA (TELEMETRY STREAM)
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container" style="margin-bottom: 48px;">
+
+  <!-- ── Simulator Controls Bar ── -->
+  <div class="simulator-controls-bar">
+    <div class="controls-left">
+      <button type="button" id="btn-stream-toggle" class="btn btn-primary btn-lg">
+        <span class="btn-icon">▶</span>
+        <span id="btn-stream-text">Start Live Simulation</span>
+      </button>
+
+      <div class="control-group">
+        <label for="select-scenario">Operating Scenario</label>
+        <select id="select-scenario" class="control-select">
+          <option value="normal" selected>Normal Operation (Stable, Lower Risk)</option>
+          <option value="thermal_stress">Thermal Stress (Abnormal Heat / ΔT Loss)</option>
+          <option value="power_surge">Power-Related Stress (Over-Power &gt; 9000 W)</option>
+          <option value="mechanical_overstrain">Mechanical Overstrain (High Torque &amp; Wear)</option>
+          <option value="random_mixed">Random Mixed Operation (Fluctuating Conditions)</option>
+          <option value="tool_degradation">Progressive Tool Degradation (Wear Spike)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="select-speed">Sampling Interval</label>
+        <select id="select-speed" class="control-select">
+          <option value="1000" selected>1.0 s (Standard)</option>
+          <option value="500">0.5 s (Fast)</option>
+          <option value="2000">2.0 s (Relaxed)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="controls-right">
+      <div class="seed-control">
+        <label for="input-seed" title="Optional integer seed for deterministic repeatability">
+          Random Seed
+        </label>
+        <div class="seed-input-wrapper">
+          <input type="number" id="input-seed" placeholder="Random" min="1" max="999999" class="seed-input" />
+          <button type="button" id="btn-seed-apply" class="btn btn-secondary btn-sm" title="Lock fixed seed for repeatable simulation">
+            Lock
+          </button>
+        </div>
+      </div>
+      <div class="stream-status-chip" id="stream-status-chip">
+        <span class="status-indicator idle"></span>
+        <span id="stream-status-text">Standby</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telemetry Warning Banner (if API error occurs) -->
+  <div id="stream-alert" class="alert alert-warning" style="display:none;" role="alert"></div>
+
+  <!-- ── Real-Time Telemetry Cards ── -->
+  <div class="telemetry-grid">
+
+    <!-- Card 1: Risk Probability -->
+    <div class="telemetry-card highlight-card">
+      <div class="telemetry-label">Predicted Failure Risk</div>
+      <div class="telemetry-value-row">
+        <span class="telemetry-primary-number" id="tel-prob">—</span>
+        <span class="risk-badge low" id="tel-risk-badge">Standby</span>
+      </div>
+      <div class="telemetry-subtext" id="tel-risk-sub">
+        Cutoff: {{ metadata.classification_threshold }} | <span id="tel-update-time">Awaiting start</span>
+      </div>
+      <div class="telemetry-reason" id="tel-risk-reason" style="margin-top: 8px; font-size: 0.8125rem; color: var(--gray-700); line-height: 1.45;">
+        Click <strong>Start Live Simulation</strong> to begin streaming synthetic telemetry to the trained model.
+      </div>
+    </div>
+
+    <!-- Card 2: Temperature -->
+    <div class="telemetry-card">
+      <div class="telemetry-label">Thermal Telemetry</div>
+      <div class="telemetry-value-row">
+        <span class="telemetry-primary-number" id="tel-proc-temp">—</span>
+        <span class="unit">K process</span>
+      </div>
+      <div class="telemetry-subtext">
+        Air: <strong id="tel-air-temp">—</strong> K | ΔT: <strong id="tel-delta-t">—</strong> K
+      </div>
+    </div>
+
+    <!-- Card 3: Spindle Speed & Torque -->
+    <div class="telemetry-card">
+      <div class="telemetry-label">Spindle Mechanics</div>
+      <div class="telemetry-value-row">
+        <span class="telemetry-primary-number" id="tel-speed">—</span>
+        <span class="unit">rpm</span>
+      </div>
+      <div class="telemetry-subtext">
+        Torque: <strong id="tel-torque">—</strong> Nm | Power: <strong id="tel-power">—</strong> W
+      </div>
+    </div>
+
+    <!-- Card 4: Tool Wear -->
+    <div class="telemetry-card">
+      <div class="telemetry-label">Tool Wear Accumulation</div>
+      <div class="telemetry-value-row">
+        <span class="telemetry-primary-number" id="tel-wear">—</span>
+        <span class="unit">min</span>
+      </div>
+      <div class="telemetry-subtext">
+        Strain: <strong id="tel-strain">—</strong> min·Nm
+      </div>
+    </div>
+
+    <!-- Card 5: Diagnostic State -->
+    <div class="telemetry-card diag-state-card">
+      <div class="telemetry-label">Active Failure Modes (Diagnostics)</div>
+      <div id="tel-diag-summary" class="tel-diag-content">
+        <span class="clean-diag">No simulation stream active</span>
+      </div>
+      <div class="telemetry-subtext" style="font-size:0.75rem; color:var(--gray-500);">
+        Multi-label Random Forest diagnostics
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Real-Time Line Charts ── -->
+  <div class="charts-grid-two">
+
+    <!-- Chart 1: Failure Probability Trend -->
+    <div class="chart-container-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Real-Time Risk Probability Trend</h3>
+          <p class="chart-desc">Estimated failure risk over streaming time with classification cutoff (5%).</p>
+        </div>
+        <span class="chart-tag">Probability (%)</span>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="chart-risk-trend" height="230"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 2: Sensors Telemetry Trend -->
+    <div class="chart-container-card">
+      <div class="chart-header">
+        <div>
+          <h3 class="chart-title">Multi-Sensor Telemetry Progression</h3>
+          <p class="chart-desc">Process Heat (K), Spindle Speed (rpm/10), and Torque (Nm).</p>
+        </div>
+        <span class="chart-tag">Sensors</span>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="chart-sensors-trend" height="230"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Live Event Stream Table ── -->
+  <div class="event-log-card">
+    <div class="event-log-head">
+      <div>
+        <h3 style="margin:0; font-size:1.1rem; color:var(--navy-900);">Live Telemetry Event Feed</h3>
+        <p style="margin:2px 0 0 0; font-size:0.875rem; color:var(--gray-600);">
+          Last 8 scored telemetry transmissions processed by Flask /api/predict
+        </p>
+      </div>
+      <button type="button" id="btn-clear-log" class="btn btn-secondary btn-sm">Clear History</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table" id="table-event-log">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Type</th>
+            <th>Air Temp</th>
+            <th>Proc Temp</th>
+            <th>Speed</th>
+            <th>Torque</th>
+            <th>Tool Wear</th>
+            <th>Failure Prob</th>
+            <th>Status</th>
+            <th>Diagnostics</th>
+          </tr>
+        </thead>
+        <tbody id="table-log-body">
+          <tr class="empty-row">
+            <td colspan="10" style="text-align:center; padding:24px; color:var(--gray-500);">
+              Press <strong>Start Live Simulation</strong> above to begin telemetry feed.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.MAINTENIQ_METADATA = {{ metadata | tojson }};
+window.REFERENCE_LIMITS = {{ reference_limits | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/live.js') }}"></script>
+{% endblock %}

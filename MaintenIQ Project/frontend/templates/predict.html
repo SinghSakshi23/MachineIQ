@@ -1,0 +1,556 @@
+{% extends "base.html" %}
+
+{% block title %}Check a Machine{% endblock %}
+{% block meta_description %}Enter your machine's current operating readings to get an instant failure risk estimate, screen for possible problems, and view plain-English explanations.{% endblock %}
+
+{% block content %}
+
+<!-- ── Page Header ── -->
+<section class="page-hero--light" aria-labelledby="predict-heading">
+  <div class="container">
+    <div class="section-label">Machine Assessment</div>
+    <h1 id="predict-heading">Check a Machine</h1>
+    <p>
+      Enter current operating conditions to estimate machine failure risk and screen for potential problems in seconds.
+    </p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="predict-layout">
+
+    <!-- ── Input Form (Left Column) ── -->
+    <div>
+      <div class="form-panel">
+        <h2>Machine Operating Readings</h2>
+        <p class="form-panel-desc">
+          Enter the six readings from the machine. You can also load example profiles below to test different operating states.
+        </p>
+
+        <!-- Error banner -->
+        <div id="form-alert" class="alert" role="alert" aria-live="polite"></div>
+
+        <form id="predict-form" novalidate aria-label="Machine failure risk check form">
+          <div class="form-stack">
+
+            <!-- Machine Type -->
+            <div class="form-group">
+              <label for="input-type">
+                Machine type <span class="required" aria-hidden="true">*</span>
+              </label>
+              <select id="input-type" name="Type" required aria-required="true" aria-describedby="type-hint type-error">
+                <option value="L" selected>L — Standard grade (50% of the dataset)</option>
+                <option value="M">M — Medium grade (30% of the dataset)</option>
+                <option value="H">H — Heavy-duty grade (20% of the dataset)</option>
+              </select>
+              <span id="type-hint" class="field-hint">
+                Material tolerance class determines structural strength and mechanical strain limits.
+              </span>
+              <span id="type-error" class="field-error" role="alert"></span>
+            </div>
+
+            <!-- Temperature row -->
+            <div class="form-row">
+              <!-- Air Temperature -->
+              <div class="form-group">
+                <label for="input-air-temp">
+                  Air temperature <span class="required" aria-hidden="true">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="input-air-temp" name="Air temperature [K]"
+                         step="0.1"
+                         value="298.1"
+                         aria-required="true"
+                         aria-describedby="air-temp-hint air-temp-error"
+                         class="has-unit" />
+                  <span class="input-unit" aria-hidden="true">K</span>
+                </div>
+                <span id="air-temp-hint" class="field-hint">Ambient temperature (Reference: 295.3–304.5 K)</span>
+                <span id="air-temp-error" class="field-error" role="alert"></span>
+              </div>
+
+              <!-- Process Temperature -->
+              <div class="form-group">
+                <label for="input-proc-temp">
+                  Process temperature <span class="required" aria-hidden="true">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="input-proc-temp" name="Process temperature [K]"
+                         step="0.1"
+                         value="308.6"
+                         aria-required="true"
+                         aria-describedby="proc-temp-hint proc-temp-error"
+                         class="has-unit" />
+                  <span class="input-unit" aria-hidden="true">K</span>
+                </div>
+                <span id="proc-temp-hint" class="field-hint">Chamber heat (Reference: 305.7–313.8 K)</span>
+                <span id="proc-temp-error" class="field-error" role="alert"></span>
+              </div>
+            </div>
+
+            <!-- Speed & Torque row -->
+            <div class="form-row">
+              <!-- Rotational Speed -->
+              <div class="form-group">
+                <label for="input-rot-speed">
+                  Rotational speed <span class="required" aria-hidden="true">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="input-rot-speed" name="Rotational speed [rpm]"
+                         step="1"
+                         value="1551"
+                         aria-required="true"
+                         aria-describedby="rot-speed-hint rot-speed-error"
+                         class="has-unit" />
+                  <span class="input-unit" aria-hidden="true">rpm</span>
+                </div>
+                <span id="rot-speed-hint" class="field-hint">Spindle velocity (Reference: 1,168–2,886 rpm)</span>
+                <span id="rot-speed-error" class="field-error" role="alert"></span>
+              </div>
+
+              <!-- Torque -->
+              <div class="form-group">
+                <label for="input-torque">
+                  Torque <span class="required" aria-hidden="true">*</span>
+                </label>
+                <div class="input-wrapper">
+                  <input type="number" id="input-torque" name="Torque [Nm]"
+                         step="0.1"
+                         value="42.8"
+                         aria-required="true"
+                         aria-describedby="torque-hint torque-error"
+                         class="has-unit" />
+                  <span class="input-unit" aria-hidden="true">Nm</span>
+                </div>
+                <span id="torque-hint" class="field-hint">Cutting resistance (Reference: 3.8–76.6 Nm)</span>
+                <span id="torque-error" class="field-error" role="alert"></span>
+              </div>
+            </div>
+
+            <!-- Tool Wear -->
+            <div class="form-group">
+              <label for="input-tool-wear">
+                Tool wear <span class="required" aria-hidden="true">*</span>
+              </label>
+              <div class="input-wrapper">
+                <input type="number" id="input-tool-wear" name="Tool wear [min]"
+                       step="1" min="0"
+                       value="0"
+                       aria-required="true"
+                       aria-describedby="tool-wear-hint tool-wear-error"
+                       class="has-unit" />
+                <span class="input-unit" aria-hidden="true">min</span>
+              </div>
+              <span id="tool-wear-hint" class="field-hint">
+                Cumulative minutes cutting with current insert (Reference: 0–253 min)
+              </span>
+              <span id="tool-wear-error" class="field-error" role="alert"></span>
+            </div>
+
+          </div><!-- /form-stack -->
+
+          <div style="display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; align-items:center;">
+            <button type="submit" id="btn-predict" class="btn btn-primary btn-lg">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="btn-text">Check Machine</span>
+            </button>
+            <button type="button" id="btn-reset" class="btn btn-secondary">
+              Clear form
+            </button>
+          </div>
+
+          <!-- Example presets -->
+          <div class="examples-bar">
+            <p class="examples-label">Try an example reading across the risk spectrum:</p>
+            <div class="examples-buttons">
+              <button class="btn btn-secondary btn-sm" id="example-safe" onclick="fillExample('safe')" type="button" title="Plausible normal operation, ~1.5% probability">
+                🟢 Safe Normal (~1.5%)
+              </button>
+              <button class="btn btn-secondary btn-sm" id="example-early" onclick="fillExample('early_wear')" type="button" title="Approaching maintenance cycle, ~15.5% probability">
+                🟡 Early Warning (~15.5%)
+              </button>
+              <button class="btn btn-secondary btn-sm" id="example-thermal" onclick="fillExample('thermal_wear')" type="button" title="Moderate thermal and cutting stress, ~28.4% probability">
+                🟠 Thermal Stress (~28.4%)
+              </button>
+              <button class="btn btn-secondary btn-sm" id="example-degrad" onclick="fillExample('degradation')" type="button" title="Elevated tool wear and high speed, ~42.4% probability">
+                🔴 Tool Degradation (~42.4%)
+              </button>
+              <button class="btn btn-secondary btn-sm" id="example-strain" onclick="fillExample('overstrain')" type="button" title="High torque and heavy tool wear, ~56.6% probability">
+                🔴 Heavy Overstrain (~56.6%)
+              </button>
+              <button class="btn btn-secondary btn-sm" id="example-crit" onclick="fillExample('critical')" type="button" title="Severe multivariable breakdown conditions, ~68.8% probability">
+                🟣 Critical Breakdown (~68.8%)
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- ── Result Panel (Right Column) ── -->
+    <div>
+
+      <!-- Placeholder (before user clicks Check Machine) -->
+      <div id="result-placeholder" class="result-placeholder">
+        <div class="placeholder-icon" aria-hidden="true">📋</div>
+        <h3>Ready to check machine</h3>
+        <p>Enter the machine's operating readings on the left and click <strong>Check Machine</strong> to view the estimated chance of failure and any potential problems.</p>
+      </div>
+
+      <!-- Result (shown after prediction) -->
+      <div id="result-panel" class="result-panel-redesign" role="region" aria-live="polite" aria-label="Machine assessment result" style="display:none;">
+
+        <!-- 1. Main Prediction Result Card -->
+        <div class="result-card primary-result-card">
+          <div class="result-headline-row">
+            <div id="result-icon-badge" class="result-icon-badge" aria-hidden="true"></div>
+            <div class="result-headline-text">
+              <div class="result-category-label">Assessment Result</div>
+              <h2 id="result-main-heading" class="result-main-heading"></h2>
+            </div>
+            <div class="result-badge-wrap">
+              <span id="result-status-chip" class="risk-badge"></span>
+            </div>
+          </div>
+
+          <div class="result-prob-box">
+            <div class="result-prob-col">
+              <div class="result-prob-num-wrap">
+                <span id="result-prob-number" class="result-prob-big">—</span>
+                <span class="result-prob-label">Estimated chance of failure</span>
+              </div>
+            </div>
+            <div class="result-prob-explanation">
+              <p id="result-prob-sentence" class="result-prob-sentence"></p>
+            </div>
+          </div>
+
+          <!-- Note for 0% probability -->
+          <div id="result-zero-prob-note" class="zero-prob-note" style="display:none;">
+            ℹ️ The estimated probability of failure is very low under these conditions. This is a model calculation and does not guarantee that failure is impossible.
+          </div>
+
+          <!-- Advisory warnings if readings exceed normal ranges -->
+          <div id="result-warnings-box" class="result-advisory-box" style="display:none;">
+            <div class="advisory-icon" aria-hidden="true">⚠️</div>
+            <div id="result-warnings-text" class="advisory-text"></div>
+          </div>
+
+          <p id="result-main-disclaimer" class="result-disclaimer-text">
+            This is a model estimate based on patterns learned from the dataset, not a guarantee.
+          </p>
+        </div>
+
+        <!-- 2. Possible Machine Problems (Failure-Mode Diagnostics) -->
+        <div class="result-card problems-result-card">
+          <div class="card-head">
+            <span class="card-head-icon" aria-hidden="true">🔍</span>
+            <div>
+              <h3>Possible machine problems</h3>
+              <p class="card-subtitle">The diagnostic model screens the readings for specific problem patterns learned from historical machine examples:</p>
+            </div>
+          </div>
+
+          <div id="possible-problems-container" class="problems-container">
+            <!-- Dynamically populated with plain English cards -->
+          </div>
+
+          <p class="diagnostic-disclaimer-note">
+            Note: If a problem is flagged, it indicates a statistical pattern identified by the diagnostic model, not a confirmed physical defect. The absence of a flagged problem does not prove that the machine is entirely healthy.
+          </p>
+        </div>
+
+        <!-- 3. Simple "Why this result?" Section -->
+        <div class="result-card why-result-card">
+          <div class="card-head">
+            <span class="card-head-icon" aria-hidden="true">💡</span>
+            <div>
+              <h3>Why this result?</h3>
+              <p class="card-subtitle">A plain explanation of what influenced the model's estimate:</p>
+            </div>
+          </div>
+
+          <div class="why-items-list">
+            <!-- Reference range check -->
+            <div class="why-item">
+              <div id="why-range-icon" class="why-item-icon">✔</div>
+              <div class="why-item-body">
+                <strong class="why-item-title">Operating reference ranges</strong>
+                <p id="why-range-text" class="why-item-desc"></p>
+              </div>
+            </div>
+
+            <!-- Model decision influence -->
+            <div class="why-item">
+              <div id="why-influence-icon" class="why-item-icon">📊</div>
+              <div class="why-item-body">
+                <strong class="why-item-title">Model decision factor</strong>
+                <p id="why-influence-text" class="why-item-desc"></p>
+                <span class="why-clarification-note">
+                  Feature influence reflects how the model weighed its mathematical decision rules, not a confirmed physical cause of equipment damage.
+                </span>
+              </div>
+            </div>
+
+            <!-- Physical distinction note -->
+            <div class="why-item distinction-item">
+              <div class="why-item-icon">ℹ️</div>
+              <div class="why-item-body">
+                <strong class="why-item-title">Important distinction</strong>
+                <p class="why-item-desc">
+                  A sensor reading outside a reference range or a feature influencing the model highlights an operational irregularity, but does not confirm an actual physical defect.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Expandable Technical Details Section -->
+        <div class="result-card tech-accordion-card">
+          <details class="tech-accordion" id="tech-accordion">
+            <summary class="tech-accordion-summary">
+              <div class="summary-left">
+                <span class="summary-icon" aria-hidden="true">⚙️</span>
+                <span class="summary-title">How the model works — technical details</span>
+              </div>
+              <span class="summary-badge">Expand for ML details ▾</span>
+            </summary>
+
+            <div class="tech-accordion-body">
+              <p class="tech-intro">
+                This section provides in-depth technical details on the underlying classifiers, decision thresholds, exact decision path attributions, derived physics indicators, and benchmark dataset limits.
+              </p>
+
+              <!-- Technical Subsection A: Model & Threshold -->
+              <div class="tech-sub-block">
+                <h4>Primary Classifier &amp; Threshold</h4>
+                <div class="tech-stats-grid">
+                  <div class="tech-stat-card">
+                    <span class="stat-label">Model Type</span>
+                    <span class="stat-val">Decision Tree</span>
+                    <span class="stat-sub">Scikit-learn pipeline</span>
+                  </div>
+                  <div class="tech-stat-card">
+                    <span class="stat-label">Classification Threshold</span>
+                    <span class="stat-val">{{ metadata.classification_threshold }} (5.0%)</span>
+                    <span class="stat-sub">Tuned to maximize recall</span>
+                  </div>
+                  <div class="tech-stat-card">
+                    <span class="stat-label">Diagnostic Model</span>
+                    <span class="stat-val">Random Forest</span>
+                    <span class="stat-sub">Multi-label classifier</span>
+                  </div>
+                </div>
+                <p class="tech-note">
+                  <strong>Why an 0.05 threshold?</strong> In industrial predictive maintenance, failing to catch a breakdown is significantly more expensive than conducting a precautionary inspection. Lowering the decision threshold from 0.50 to 0.05 prioritizes high recall (57.2%), ensuring potential anomalies are surfaced early.
+                </p>
+              </div>
+
+              <!-- Technical Subsection B: Local Feature Attribution -->
+              <div class="tech-sub-block">
+                <h4>Local Feature Attribution (Tree Path Influence)</h4>
+                <p class="tech-sub-desc">
+                  Calculated from the exact decision tree path from the root node (<span id="tech-base-prob">13.1%</span> baseline) to the final leaf. Positive (+) values indicate parameters that shifted the probability higher toward predicted failure; negative (−) values indicate parameters that stabilized the estimate. This describes algorithm decision weighting, not confirmed physical danger.
+                </p>
+                <div id="tech-contributions-list" class="tech-contributions-list">
+                  <!-- Dynamically rendered attribution bars -->
+                </div>
+              </div>
+
+              <!-- Technical Subsection C: Derived Engineering Calculations -->
+              <div class="tech-sub-block">
+                <h4>Derived Engineering Calculations</h4>
+                <p class="tech-sub-desc">
+                  <em>Note:</em> These indicators are mathematically computed from the entered sensor readings. They are derived metrics, not direct measurements from separate physical sensors.
+                </p>
+                <div id="tech-physics-grid" class="tech-physics-grid">
+                  <!-- Dynamically populated with ΔT, Power, Strain, Tool Wear -->
+                </div>
+              </div>
+
+              <!-- Technical Subsection D: Reference Operating Limits -->
+              <div class="tech-sub-block">
+                <h4>Documented Reference Operating Limits</h4>
+                <p class="tech-sub-desc">
+                  Baseline operating distributions and documented physical thresholds cited from the benchmark dataset:
+                </p>
+                <div class="tech-table-wrapper">
+                  <table class="tech-table">
+                    <thead>
+                      <tr>
+                        <th>Parameter</th>
+                        <th>Reference Range</th>
+                        <th>Unit</th>
+                        <th>Operational Context</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Air temperature</strong></td>
+                        <td>295.3 – 304.5</td>
+                        <td>K</td>
+                        <td>Ambient factory floor temperature</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Process temperature</strong></td>
+                        <td>305.7 – 313.8</td>
+                        <td>K</td>
+                        <td>Internal machining chamber temperature</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Rotational speed</strong></td>
+                        <td>1,168 – 2,886</td>
+                        <td>rpm</td>
+                        <td>Spindle rotational velocity</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Torque</strong></td>
+                        <td>3.8 – 76.6</td>
+                        <td>Nm</td>
+                        <td>Cutting shaft rotational resistance</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Tool wear</strong></td>
+                        <td>0 – 253</td>
+                        <td>min</td>
+                        <td>Cumulative cutting time on insert (replacement ~200–240 min)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Technical Subsection E: Limitations -->
+              <div class="tech-sub-block">
+                <h4>Model Evaluation &amp; Limitations</h4>
+                <p class="tech-sub-desc">
+                  This model was trained on historical machine examples from a synthetic benchmark dataset. While it accurately reproduces documented physical failure modes (thermal stress, electrical overload, mechanical strain, and tool degradation), synthetic benchmarks cannot capture all unmodeled real-world factory variables such as structural vibration, lubricant degradation, or sensor calibration drift. It should not be used as the sole basis for real plant safety decisions.
+                </p>
+              </div>
+
+            </div>
+          </details>
+        </div>
+
+        <!-- 5. User Action Buttons -->
+        <div class="result-actions">
+          <button type="button" class="btn btn-secondary" id="btn-edit-readings">
+            ↑ Edit readings
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-check-another">
+            Check another machine
+          </button>
+        </div>
+
+      </div><!-- /result-panel-redesign -->
+
+    </div><!-- /right column -->
+
+  </div><!-- /predict-layout -->
+</div><!-- /container -->
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.MAINTENIQ_METADATA = {{ metadata | tojson }};
+window.REFERENCE_LIMITS = {{ reference_limits | tojson }};
+
+const EXAMPLES = {
+  safe: {
+    "Type": "L",
+    "Air temperature [K]": 298.1,
+    "Process temperature [K]": 308.6,
+    "Rotational speed [rpm]": 1551,
+    "Torque [Nm]": 42.8,
+    "Tool wear [min]": 0
+  },
+  early_wear: {
+    "Type": "M",
+    "Air temperature [K]": 302.3,
+    "Process temperature [K]": 312.1,
+    "Rotational speed [rpm]": 1350,
+    "Torque [Nm]": 65.2,
+    "Tool wear [min]": 180
+  },
+  thermal_wear: {
+    "Type": "L",
+    "Air temperature [K]": 302.6,
+    "Process temperature [K]": 312.1,
+    "Rotational speed [rpm]": 1344,
+    "Torque [Nm]": 51.0,
+    "Tool wear [min]": 206
+  },
+  degradation: {
+    "Type": "M",
+    "Air temperature [K]": 302.1,
+    "Process temperature [K]": 311.0,
+    "Rotational speed [rpm]": 1574,
+    "Torque [Nm]": 34.1,
+    "Tool wear [min]": 215
+  },
+  overstrain: {
+    "Type": "H",
+    "Air temperature [K]": 304.5,
+    "Process temperature [K]": 316.2,
+    "Rotational speed [rpm]": 1200,
+    "Torque [Nm]": 70.0,
+    "Tool wear [min]": 220
+  },
+  critical: {
+    "Type": "M",
+    "Air temperature [K]": 303.8,
+    "Process temperature [K]": 313.4,
+    "Rotational speed [rpm]": 1310,
+    "Torque [Nm]": 71.5,
+    "Tool wear [min]": 240
+  },
+  // Backward compatibility aliases
+  low: {
+    "Type": "L",
+    "Air temperature [K]": 298.1,
+    "Process temperature [K]": 308.6,
+    "Rotational speed [rpm]": 1551,
+    "Torque [Nm]": 42.8,
+    "Tool wear [min]": 0
+  },
+  heat: {
+    "Type": "M",
+    "Air temperature [K]": 303.8,
+    "Process temperature [K]": 309.2,
+    "Rotational speed [rpm]": 1320,
+    "Torque [Nm]": 48.0,
+    "Tool wear [min]": 60
+  },
+  power: {
+    "Type": "L",
+    "Air temperature [K]": 299.0,
+    "Process temperature [K]": 309.5,
+    "Rotational speed [rpm]": 2850,
+    "Torque [Nm]": 68.0,
+    "Tool wear [min]": 30
+  }
+};
+
+function fillExample(key) {
+  const ex = EXAMPLES[key];
+  if (!ex) return;
+  document.getElementById('input-type').value = ex['Type'];
+  document.getElementById('input-air-temp').value = ex['Air temperature [K]'];
+  document.getElementById('input-proc-temp').value = ex['Process temperature [K]'];
+  document.getElementById('input-rot-speed').value = ex['Rotational speed [rpm]'];
+  document.getElementById('input-torque').value = ex['Torque [Nm]'];
+  document.getElementById('input-tool-wear').value = ex['Tool wear [min]'];
+  
+  // Clear result view so user can submit
+  const panel = document.getElementById('result-panel');
+  if (panel) panel.style.display = 'none';
+  const placeholder = document.getElementById('result-placeholder');
+  if (placeholder) placeholder.style.display = 'block';
+  const alertEl = document.getElementById('form-alert');
+  if (alertEl) { alertEl.classList.remove('visible'); alertEl.textContent = ''; }
+}
+</script>
+<script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+{% endblock %}

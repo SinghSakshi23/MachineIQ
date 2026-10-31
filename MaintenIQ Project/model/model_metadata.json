@@ -1,0 +1,43 @@
+{
+    "project": "MaintenIQ",
+    "target": "Machine failure",
+    "input_features": [
+        "Type",
+        "Air temperature [K]",
+        "Process temperature [K]",
+        "Rotational speed [rpm]",
+        "Torque [Nm]",
+        "Tool wear [min]"
+    ],
+    "numeric_features": [
+        "Air temperature [K]",
+        "Process temperature [K]",
+        "Rotational speed [rpm]",
+        "Torque [Nm]",
+        "Tool wear [min]"
+    ],
+    "categorical_features": [
+        "Type"
+    ],
+    "excluded_features": [
+        "UDI",
+        "Product ID",
+        "TWF",
+        "HDF",
+        "PWF",
+        "OSF",
+        "RNF"
+    ],
+    "model_name": "Decision Tree",
+    "classification_threshold": 0.05,
+    "test_metrics": {
+        "accuracy": 0.9715,
+        "precision": 0.5578947368421052,
+        "recall": 0.7794117647058824,
+        "f1_score": 0.6503067484662577,
+        "roc_auc": 0.8851007794422117,
+        "brier_score": 0.015766431075839322,
+        "log_loss": 0.07117965947234102
+    },
+    "model_calibration": "Platt Scaling (Sigmoid via 5-Fold Stratified Cross-Validation on Training Data)"
+}

@@ -1,0 +1,112 @@
+{
+    "model": "MultiOutput Random Forest Diagnostics",
+    "exact_match_accuracy": 0.977,
+    "hamming_loss": 0.0046,
+    "micro_f1": 0.6567,
+    "macro_f1": 0.5159,
+    "per_label": {
+        "TWF": {
+            "threshold": 0.15,
+            "precision": 0.3333,
+            "recall": 0.2727,
+            "f1_score": 0.3,
+            "support": 11
+        },
+        "HDF": {
+            "threshold": 0.35,
+            "precision": 0.8571,
+            "recall": 0.7059,
+            "f1_score": 0.7742,
+            "support": 17
+        },
+        "PWF": {
+            "threshold": 0.2,
+            "precision": 0.68,
+            "recall": 0.85,
+            "f1_score": 0.7556,
+            "support": 20
+        },
+        "OSF": {
+            "threshold": 0.35,
+            "precision": 0.8571,
+            "recall": 0.6667,
+            "f1_score": 0.75,
+            "support": 18
+        },
+        "RNF": {
+            "threshold": 0.5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 6
+        }
+    },
+    "baselines": {
+        "Dummy Prior": {
+            "exact_match_accuracy": 0.9675,
+            "hamming_loss": 0.0072,
+            "micro_f1": 0.0,
+            "macro_f1": 0.0,
+            "per_label": {
+                "TWF": {
+                    "precision": 0.0,
+                    "recall": 0.0,
+                    "f1_score": 0.0
+                },
+                "HDF": {
+                    "precision": 0.0,
+                    "recall": 0.0,
+                    "f1_score": 0.0
+                },
+                "PWF": {
+                    "precision": 0.0,
+                    "recall": 0.0,
+                    "f1_score": 0.0
+                },
+                "OSF": {
+                    "precision": 0.0,
+                    "recall": 0.0,
+                    "f1_score": 0.0
+                },
+                "RNF": {
+                    "precision": 0.0,
+                    "recall": 0.0,
+                    "f1_score": 0.0
+                }
+            }
+        },
+        "Decision Tree": {
+            "exact_match_accuracy": 0.974,
+            "hamming_loss": 0.0053,
+            "micro_f1": 0.5891,
+            "macro_f1": 0.4609,
+            "per_label": {
+                "TWF": {
+                    "precision": 0.1429,
+                    "recall": 0.0909,
+                    "f1_score": 0.1111
+                },
+                "HDF": {
+                    "precision": 0.9286,
+                    "recall": 0.7647,
+                    "f1_score": 0.8387
+                },
+                "PWF": {
+                    "precision": 0.7059,
+                    "recall": 0.6,
+                    "f1_score": 0.6486
+                },
+                "OSF": {
+                    "precision": 0.75,
+                    "recall": 0.6667,
+                    "f1_score": 0.7059
+                },
+                "RNF": {
+                    "precision": 0.0,
+                    "recall": 0.0,
+                    "f1_score": 0.0
+                }
+            }
+        }
+    }
+}

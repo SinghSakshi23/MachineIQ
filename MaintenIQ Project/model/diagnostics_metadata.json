@@ -1,0 +1,81 @@
+{
+    "project": "MaintenIQ",
+    "model_name": "MultiOutput Random Forest Diagnostics",
+    "input_features": [
+        "Type",
+        "Air temperature [K]",
+        "Process temperature [K]",
+        "Rotational speed [rpm]",
+        "Torque [Nm]",
+        "Tool wear [min]"
+    ],
+    "target_modes": [
+        "TWF",
+        "HDF",
+        "PWF",
+        "OSF",
+        "RNF"
+    ],
+    "mode_descriptions": {
+        "TWF": "Tool Wear Failure",
+        "HDF": "Heat Dissipation Failure",
+        "PWF": "Power Failure",
+        "OSF": "Overstrain Failure",
+        "RNF": "Random Failure"
+    },
+    "thresholds": {
+        "TWF": 0.15,
+        "HDF": 0.35,
+        "PWF": 0.2,
+        "OSF": 0.35,
+        "RNF": 0.5
+    },
+    "test_metrics": {
+        "exact_match_accuracy": 0.977,
+        "hamming_loss": 0.0046,
+        "micro_f1": 0.6567,
+        "macro_f1": 0.5159,
+        "per_label": {
+            "TWF": {
+                "threshold": 0.15,
+                "precision": 0.3333,
+                "recall": 0.2727,
+                "f1_score": 0.3,
+                "support": 11
+            },
+            "HDF": {
+                "threshold": 0.35,
+                "precision": 0.8571,
+                "recall": 0.7059,
+                "f1_score": 0.7742,
+                "support": 17
+            },
+            "PWF": {
+                "threshold": 0.2,
+                "precision": 0.68,
+                "recall": 0.85,
+                "f1_score": 0.7556,
+                "support": 20
+            },
+            "OSF": {
+                "threshold": 0.35,
+                "precision": 0.8571,
+                "recall": 0.6667,
+                "f1_score": 0.75,
+                "support": 18
+            },
+            "RNF": {
+                "threshold": 0.5,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1_score": 0.0,
+                "support": 6
+            }
+        }
+    },
+    "documented_limitations": {
+        "RNF": "Random Failure (RNF) is defined in AI4I 2020 as 0.1% independent uniform noise. Because it has no correlation with sensor readings, machine learning models cannot reliably predict it from operating data (recall/precision = 0).",
+        "TWF": "Tool Wear Failure has only 46 positive cases in 10,000 samples and overlaps closely with normal high wear, leading to lower recall on standard thresholds.",
+        "physical_interpretation": "Outputs represent statistical failure mode estimates based on operating patterns, not direct physical sensor confirmations."
+    }
+}

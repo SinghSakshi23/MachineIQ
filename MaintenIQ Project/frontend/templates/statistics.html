@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+
+{% block title %}Statistics &amp; Visualizations — MaintenIQ{% endblock %}
+{% block meta_description %}Interactive exploratory data analysis and machine learning statistical graphs extracted directly from the MaintenIQ Jupyter notebook.{% endblock %}
+
+{% block content %}
+
+<!-- ── Page Header ── -->
+<section class="page-hero--light" aria-labelledby="stats-heading">
+  <div class="container">
+    <div class="section-label">Exploratory &amp; Model Statistics</div>
+    <h1 id="stats-heading">Machine &amp; Model Statistics</h1>
+    <p>
+      Explore the complete suite of statistical visualizations generated during exploratory data analysis,
+      feature correlation, cross-validation model benchmarking, and threshold optimization from
+      <code>notebooks/MaintainIQ Project.ipynb</code>.
+    </p>
+  </div>
+</section>
+
+<!-- ── Summary KPI Strip ── -->
+<section class="section" style="padding-top: 30px; padding-bottom: 10px;">
+  <div class="container">
+    <div class="stats-kpi-grid">
+      <div class="stats-kpi-card">
+        <span class="stats-kpi-label">Dataset Records</span>
+        <span class="stats-kpi-val">10,000</span>
+        <span class="stats-kpi-sub">Total machine observations</span>
+      </div>
+      <div class="stats-kpi-card">
+        <span class="stats-kpi-label">Failure Base Rate</span>
+        <span class="stats-kpi-val">3.39%</span>
+        <span class="stats-kpi-sub">339 positive failure cases</span>
+      </div>
+      <div class="stats-kpi-card">
+        <span class="stats-kpi-label">Models Benchmarked</span>
+        <span class="stats-kpi-val">5 Models</span>
+        <span class="stats-kpi-sub">Evaluated via 5-Fold Stratified CV</span>
+      </div>
+      <div class="stats-kpi-card">
+        <span class="stats-kpi-label">Optimal Threshold</span>
+        <span class="stats-kpi-val">0.05</span>
+        <span class="stats-kpi-sub">Calibrated for 57.2% safety recall</span>
+      </div>
+      <div class="stats-kpi-card">
+        <span class="stats-kpi-label">Primary Driver</span>
+        <span class="stats-kpi-val">Torque &amp; Speed</span>
+        <span class="stats-kpi-sub">Highest permutation importance</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Filter Tabs & Gallery ── -->
+<section class="section" id="notebook-section" style="padding-top: 20px;">
+  <div class="container">
+
+    <!-- Filter Buttons -->
+    <div class="stats-filter-bar">
+      <div class="filter-group">
+        <button type="button" class="filter-btn active" data-filter="all">
+          All Visualizations <span class="filter-count">12</span>
+        </button>
+        <button type="button" class="filter-btn" data-filter="eda">
+          Distributions &amp; Correlations <span class="filter-count">3</span>
+        </button>
+        <button type="button" class="filter-btn" data-filter="boxplots">
+          Failure Boxplots <span class="filter-count">5</span>
+        </button>
+        <button type="button" class="filter-btn" data-filter="model">
+          Model Training &amp; Evaluation <span class="filter-count">4</span>
+        </button>
+      </div>
+
+      <div class="source-tag">
+        <span class="icon">📓</span> Source: <code>MaintainIQ Project.ipynb</code>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="stats-gallery-grid" id="stats-gallery">
+
+      <!-- ====================================================
+           CATEGORY 1: DISTRIBUTIONS & CORRELATIONS
+           ==================================================== -->
+
+      <!-- Chart 1: Failure Distribution -->
+      <div class="stat-chart-card" data-category="eda">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Data Distribution</div>
+          <h3 class="stat-card-title">Machine Failure Class Distribution</h3>
+          <p class="stat-card-desc">Bar chart of positive vs. negative failure outcomes in the dataset.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Machine Failure Class Distribution" role="button" tabindex="0" aria-label="Expand Machine Failure Class Distribution chart">
+          <img src="{{ url_for('static', filename='img/notebook/target_distribution.png') }}"
+               alt="Machine Failure Class Distribution Bar Chart"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Severe class imbalance with <strong>9,661 normal operating records</strong> (96.61%) and only <strong>339 failure records</strong> (3.39%). Standard accuracy is misleading; optimization requires F1-score and recall focus.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>failure_counts = df[target].value_counts().sort_index()
+
+plt.figure(figsize=(7, 5))
+plt.bar(["No Failure", "Failure"], [failure_counts.get(0, 0), failure_counts.get(1, 0)])
+plt.title("Machine Failure Distribution")
+plt.xlabel("Machine Status")
+plt.ylabel("Number of Records")
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 2: Feature Distributions Histograms -->
+      <div class="stat-chart-card" data-category="eda">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Data Distribution</div>
+          <h3 class="stat-card-title">Operating Feature Distributions</h3>
+          <p class="stat-card-desc">30-bin histogram grids across the five primary continuous sensor variables.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Operating Feature Distributions (Histograms)" role="button" tabindex="0" aria-label="Expand Operating Feature Distributions chart">
+          <img src="{{ url_for('static', filename='img/notebook/feature_distributions_hist.png') }}"
+               alt="Distribution of Machine Operating Features Histograms"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Air and process temperatures are Gaussian distributions with a systematic 10 K thermal offset. Rotational speed exhibits positive skewness, while tool wear is evenly distributed over 0–250 minutes.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>df[numeric_features].hist(figsize=(12, 8), bins=30, edgecolor="black")
+plt.suptitle("Distribution of Machine Operating Features")
+plt.tight_layout()
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 3: Correlation Heatmap -->
+      <div class="stat-chart-card" data-category="eda">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Correlation Analysis</div>
+          <h3 class="stat-card-title">Pearson Correlation Matrix Heatmap</h3>
+          <p class="stat-card-desc">Pairwise linear correlation coefficients between operating features and machine failure.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Correlation Heatmap" role="button" tabindex="0" aria-label="Expand Correlation Heatmap chart">
+          <img src="{{ url_for('static', filename='img/notebook/correlation_heatmap.png') }}"
+               alt="Correlation Heatmap"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Rotational speed and Torque show strong negative collinearity (<strong>r = −0.88</strong>), following physical power conservation ($P = \tau \omega$). Torque has the highest individual linear correlation with failure (<strong>r = +0.19</strong>).
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>plt.figure(figsize=(10, 7))
+correlation = df[numeric_features + [target]].corr()
+sns.heatmap(correlation, annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Heatmap")
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           CATEGORY 2: FAILURE BOXPLOTS
+           ==================================================== -->
+
+      <!-- Chart 4: Torque Boxplot -->
+      <div class="stat-chart-card" data-category="boxplots">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Failure Analysis</div>
+          <h3 class="stat-card-title">Torque [Nm] by Failure Status</h3>
+          <p class="stat-card-desc">Distribution of cutting shaft resistance torque across failed vs healthy machines.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Torque [Nm] by Machine Failure Status" role="button" tabindex="0" aria-label="Expand Torque by Machine Failure Status chart">
+          <img src="{{ url_for('static', filename='img/notebook/boxplot_torque.png') }}"
+               alt="Torque by Machine Failure Status Boxplot"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Failed machines exhibit significantly elevated median torque (~55 Nm vs ~40 Nm) with prominent high outliers approaching 76.6 Nm causing mechanical overstrain.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>plt.figure(figsize=(7, 5))
+sns.boxplot(data=df, x=target, y="Torque [Nm]")
+plt.title("Torque [Nm] by Machine Failure Status")
+plt.xlabel("Machine Failure (0 = No, 1 = Yes)")
+plt.ylabel("Torque [Nm]")
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 5: Rotational Speed Boxplot -->
+      <div class="stat-chart-card" data-category="boxplots">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Failure Analysis</div>
+          <h3 class="stat-card-title">Rotational Speed [rpm] by Failure Status</h3>
+          <p class="stat-card-desc">Spindle velocity distribution comparing normal operation vs failure events.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Rotational Speed [rpm] by Machine Failure Status" role="button" tabindex="0" aria-label="Expand Rotational Speed by Machine Failure Status chart">
+          <img src="{{ url_for('static', filename='img/notebook/boxplot_rotational_speed.png') }}"
+               alt="Rotational Speed by Machine Failure Status Boxplot"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Failures manifest at bimodal extremes — lower median rpm (< 1,400 rpm) linked with heavy mechanical strain, or extreme high-rpm outliers (> 2,600 rpm) causing electrical power surges.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>plt.figure(figsize=(7, 5))
+sns.boxplot(data=df, x=target, y="Rotational speed [rpm]")
+plt.title("Rotational speed [rpm] by Machine Failure Status")
+plt.xlabel("Machine Failure (0 = No, 1 = Yes)")
+plt.ylabel("Rotational speed [rpm]")
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 6: Tool Wear Boxplot -->
+      <div class="stat-chart-card" data-category="boxplots">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Failure Analysis</div>
+          <h3 class="stat-card-title">Tool Wear [min] by Failure Status</h3>
+          <p class="stat-card-desc">Accumulated cutting minutes for the milling insert compared across machine states.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Tool Wear [min] by Machine Failure Status" role="button" tabindex="0" aria-label="Expand Tool Wear by Machine Failure Status chart">
+          <img src="{{ url_for('static', filename='img/notebook/boxplot_tool_wear.png') }}"
+               alt="Tool Wear by Machine Failure Status Boxplot"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Failed machines show distinctly higher cumulative cutting wear (interquartile range 140–215 min vs 50–160 min), confirming tool fatigue as a major multi-factor contributor.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>plt.figure(figsize=(7, 5))
+sns.boxplot(data=df, x=target, y="Tool wear [min]")
+plt.title("Tool wear [min] by Machine Failure Status")
+plt.xlabel("Machine Failure (0 = No, 1 = Yes)")
+plt.ylabel("Tool wear [min]")
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 7: Air Temperature Boxplot -->
+      <div class="stat-chart-card" data-category="boxplots">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Failure Analysis</div>
+          <h3 class="stat-card-title">Air Temperature [K] by Failure Status</h3>
+          <p class="stat-card-desc">Ambient temperature readings categorized by normal vs failure instances.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Air Temperature [K] by Machine Failure Status" role="button" tabindex="0" aria-label="Expand Air Temperature by Machine Failure Status chart">
+          <img src="{{ url_for('static', filename='img/notebook/boxplot_air_temperature.png') }}"
+               alt="Air Temperature by Machine Failure Status Boxplot"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Air temperature shows a modest positive shift in failure records (> 301 K), which reduces convective cooling efficiency when process heat rises.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>plt.figure(figsize=(7, 5))
+sns.boxplot(data=df, x=target, y="Air temperature [K]")
+plt.title("Air temperature [K] by Machine Failure Status")
+plt.xlabel("Machine Failure (0 = No, 1 = Yes)")
+plt.ylabel("Air temperature [K]")
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 8: Process Temperature Boxplot -->
+      <div class="stat-chart-card" data-category="boxplots">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Failure Analysis</div>
+          <h3 class="stat-card-title">Process Temperature [K] by Failure Status</h3>
+          <p class="stat-card-desc">Internal machining chamber temperature grouped by machine outcome.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Process Temperature [K] by Machine Failure Status" role="button" tabindex="0" aria-label="Expand Process Temperature by Machine Failure Status chart">
+          <img src="{{ url_for('static', filename='img/notebook/boxplot_process_temperature.png') }}"
+               alt="Process Temperature by Machine Failure Status Boxplot"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Process temperature closely tracks ambient fluctuations with failures concentrating above 311 K, correlating with heat dissipation failure (HDF).
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>plt.figure(figsize=(7, 5))
+sns.boxplot(data=df, x=target, y="Process temperature [K]")
+plt.title("Process temperature [K] by Machine Failure Status")
+plt.xlabel("Machine Failure (0 = No, 1 = Yes)")
+plt.ylabel("Process temperature [K]")
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           CATEGORY 3: MODEL TRAINING & EVALUATION
+           ==================================================== -->
+
+      <!-- Chart 9: Model Comparison CV -->
+      <div class="stat-chart-card" data-category="model">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Model Benchmark</div>
+          <h3 class="stat-card-title">5-Fold Cross-Validation Model Comparison</h3>
+          <p class="stat-card-desc">Grouped bar comparison across Decision Tree, Random Forest, KNN, MLP, and Logistic Regression.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Model Comparison Using Cross-Validation" role="button" tabindex="0" aria-label="Expand Model Comparison Using Cross-Validation chart">
+          <img src="{{ url_for('static', filename='img/notebook/model_comparison_cv.png') }}"
+               alt="Model Comparison Bar Chart"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Decision Tree was selected as the champion model with the highest cross-validation F1-score (<strong>0.6283</strong>) and recall (<strong>57.19%</strong>) across candidate architectures, outperforming higher-precision but lower-recall models.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>cv_results_df.set_index("Model")[
+    ["Precision", "Recall", "F1-score", "ROC-AUC"]
+].plot(kind="bar", figsize=(12, 6))
+
+plt.title("Model Comparison Using Cross-Validation")
+plt.ylabel("Score")
+plt.xlabel("Model")
+plt.xticks(rotation=30, ha="right")
+plt.legend(loc="lower right")
+plt.tight_layout()
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 10: Threshold Tuning Curve -->
+      <div class="stat-chart-card" data-category="model">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Optimization</div>
+          <h3 class="stat-card-title">Threshold Tuning Curve</h3>
+          <p class="stat-card-desc">Precision, Recall, and F1-score curves across varying classification thresholds.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Threshold Tuning Using Training Cross-Validation" role="button" tabindex="0" aria-label="Expand Threshold Tuning Using Training Cross-Validation chart">
+          <img src="{{ url_for('static', filename='img/notebook/threshold_tuning_curve.png') }}"
+               alt="Threshold Tuning Curve"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Lowering the decision threshold from 0.50 to <strong>0.05</strong> dramatically improves recall on rare failures without crippling precision, making it the mathematically justified choice for preventive maintenance.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>plt.figure(figsize=(10, 6))
+plt.plot(threshold_df["Threshold"], threshold_df["Precision"], label="Precision")
+plt.plot(threshold_df["Threshold"], threshold_df["Recall"], label="Recall")
+plt.plot(threshold_df["Threshold"], threshold_df["F1-score"], label="F1-score")
+plt.axvline(best_threshold, linestyle="--", label=f"Selected threshold = {best_threshold:.2f}")
+plt.xlabel("Classification Threshold")
+plt.ylabel("Score")
+plt.title("Threshold Tuning Using Training Cross-Validation")
+plt.legend()
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 11: Confusion Matrix Heatmap -->
+      <div class="stat-chart-card" data-category="model">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Model Evaluation</div>
+          <h3 class="stat-card-title">Confusion Matrix — Final Model</h3>
+          <p class="stat-card-desc">Confusion matrix heatmap evaluated on the 2,000 independent test set observations.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Confusion Matrix — Final Model" role="button" tabindex="0" aria-label="Expand Confusion Matrix chart">
+          <img src="{{ url_for('static', filename='img/notebook/confusion_matrix_heatmap.png') }}"
+               alt="Confusion Matrix Heatmap"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            Test set results: <strong>1,916 True Negatives</strong>, <strong>40 True Positives</strong>, 16 False Positives, and 28 False Negatives. Overall test accuracy is <strong>97.8%</strong> with <strong>71.4% precision</strong>.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>cm = confusion_matrix(y_test, test_predictions, labels=[0, 1])
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+            xticklabels=["No Failure", "Failure"],
+            yticklabels=["No Failure", "Failure"])
+plt.xlabel("Predicted Status")
+plt.ylabel("Actual Status")
+plt.title("Confusion Matrix — Final Model")
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- Chart 12: Permutation Feature Importance -->
+      <div class="stat-chart-card" data-category="model">
+        <div class="stat-card-header">
+          <div class="stat-card-badge">Explainability</div>
+          <h3 class="stat-card-title">Permutation Feature Importance</h3>
+          <p class="stat-card-desc">Mean reduction in ROC-AUC when each feature is randomly permuted on the test set.</p>
+        </div>
+        <div class="stat-img-wrap" data-caption="Feature Importance — MaintenIQ" role="button" tabindex="0" aria-label="Expand Feature Importance chart">
+          <img src="{{ url_for('static', filename='img/notebook/feature_importance_barplot.png') }}"
+               alt="Feature Importance Bar Chart"
+               class="stat-chart-img"
+               loading="lazy" />
+          <div class="zoom-overlay"><span>🔍 Click to expand</span></div>
+        </div>
+        <div class="stat-card-body">
+          <div class="stat-takeaway">
+            <span class="takeaway-label">Key Statistical Finding:</span>
+            <strong>Torque [Nm]</strong> and <strong>Rotational speed [rpm]</strong> are by far the dominant drivers of model discrimination, aligning with physical principles of mechanical overstrain and electrical power draw.
+          </div>
+          <details class="code-accordion">
+            <summary class="code-summary">Show Notebook Code</summary>
+            <pre class="code-block"><code>plt.figure(figsize=(9, 6))
+sns.barplot(data=importance_df, x="Importance", y="Feature")
+plt.title("Feature Importance — MaintenIQ")
+plt.xlabel("Mean Change in ROC-AUC")
+plt.ylabel("Input Feature")
+plt.tight_layout()
+plt.show()</code></pre>
+          </details>
+        </div>
+      </div>
+
+    </div><!-- /stats-gallery-grid -->
+
+  </div>
+</section>
+
+<!-- ── Lightbox Modal for High-Resolution View ── -->
+<div id="stats-lightbox" class="stats-lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-content">
+    <button type="button" class="lightbox-close" onclick="closeLightbox(event)">&times;</button>
+    <img id="lightbox-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Enlarged chart" />
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filter button interactions
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const filter = btn.getAttribute('data-filter');
+    const cards = document.querySelectorAll('.stat-chart-card');
+
+    cards.forEach(card => {
+      if (filter === 'all' || card.getAttribute('data-category') === filter) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+
+// Lightbox modal functionality
+function openLightbox(src, caption) {
+  const modal = document.getElementById('stats-lightbox');
+  const img   = document.getElementById('lightbox-img');
+  const cap   = document.getElementById('lightbox-caption');
+  if (img) img.src = src;
+  if (cap) cap.textContent = caption;
+  if (modal) modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// Attach accessible click and keyboard listeners to all gallery cards
+document.querySelectorAll('.stat-img-wrap').forEach(wrap => {
+  const trigger = () => {
+    const img = wrap.querySelector('img');
+    const caption = wrap.getAttribute('data-caption') || (img ? img.alt : '');
+    if (img) openLightbox(img.src, caption);
+  };
+  wrap.addEventListener('click', trigger);
+  wrap.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      trigger();
+    }
+  });
+});
+
+function closeLightbox(e) {
+  if (e.target.classList.contains('stats-lightbox') || e.target.classList.contains('lightbox-close')) {
+    const modal = document.getElementById('stats-lightbox');
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+// Close lightbox on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('stats-lightbox');
+    if (modal && modal.classList.contains('open')) {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{% block meta_description %}MaintenIQ — Industrial predictive maintenance, multi-label failure diagnostics, and real-time machine telemetry monitoring.{% endblock %}" />
+  <title>{% block title %}MaintenIQ{% endblock %} — Predictive Maintenance</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  {% block head_extra %}{% endblock %}
+  <script>
+    (function() {
+      const theme = localStorage.getItem('mainteniq-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<div class="page-wrapper">
+
+  <!-- ── Navigation ── -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-inner">
+      <a href="/" class="logo" aria-label="MaintenIQ Home">
+        <div class="logo-icon" aria-hidden="true">⚙</div>
+        <div>
+          MaintenIQ
+          <span class="logo-sub">Predictive Maintenance</span>
+        </div>
+      </a>
+
+      <!-- Mobile toggle -->
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="nav-links" id="nav-menu" role="list">
+        <li>
+          <a href="/" id="nav-dashboard" class="{% if request.endpoint == 'index' %}active{% endif %}">
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="/predict" id="nav-predict" class="{% if request.endpoint == 'predict_page' %}active{% endif %}">
+            Check a Machine
+          </a>
+        </li>
+        <li>
+          <a href="/live" id="nav-live" class="{% if request.endpoint == 'live_page' %}active{% endif %}">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            Live Monitor
+          </a>
+        </li>
+        <li>
+          <a href="/statistics" id="nav-statistics" class="nav-subtle {% if request.endpoint in ('statistics_page', 'insights_page') %}active{% endif %}">
+            Statistics
+          </a>
+        </li>
+        <li class="nav-theme-item">
+          <button type="button" class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle Light / Dark Mode" title="Toggle between White / Light Mode and Dark Mode">
+            <span class="theme-toggle-icon" id="theme-toggle-icon" aria-hidden="true">🌙</span>
+            <span class="theme-toggle-text" id="theme-toggle-text">Dark Mode</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Page Content ── -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Footer ── -->
+  {% block footer %}
+  <footer class="footer">
+    <p>
+      MaintenIQ &mdash; Industrial Machine Failure Intelligence &amp; Diagnostics.
+      Benchmarked on the
+      <a href="https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset"
+         target="_blank" rel="noopener">AI4I 2020 Predictive Maintenance Dataset</a>
+      (synthetic benchmark). Not for use in real factory safety decisions.
+    </p>
+  </footer>
+  {% endblock %}
+
+</div>
+
+<script>
+  // Mobile nav toggle
+  (function() {
+    const toggle = document.getElementById('nav-toggle');
+    const menu   = document.getElementById('nav-menu');
+    if (!toggle || !menu) return;
+    toggle.addEventListener('click', function() {
+      const open = menu.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
+    });
+    // Close when a link is clicked
+    menu.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  // Global Theme Switcher (White / Light Mode and Dark Mode)
+  (function initThemeSwitcher() {
+    function getSavedTheme() {
+      return localStorage.getItem('mainteniq-theme') || 'light';
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      if (document.body) {
+        if (theme === 'dark') {
+          document.body.classList.add('theme-dark');
+          document.body.classList.remove('theme-light');
+        } else {
+          document.body.classList.add('theme-light');
+          document.body.classList.remove('theme-dark');
+        }
+      }
+      localStorage.setItem('mainteniq-theme', theme);
+
+      // Update all toggle buttons
+      document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
+        const icon = btn.querySelector('.theme-toggle-icon');
+        const text = btn.querySelector('.theme-toggle-text');
+        if (theme === 'dark') {
+          if (icon) icon.textContent = '☀️';
+          if (text) text.textContent = 'Light Mode';
+          btn.setAttribute('aria-label', 'Switch to White / Light Mode');
+        } else {
+          if (icon) icon.textContent = '🌙';
+          if (text) text.textContent = 'Dark Mode';
+          btn.setAttribute('aria-label', 'Switch to Dark Mode');
+        }
+      });
+
+      window.dispatchEvent(new CustomEvent('mainteniq-theme-change', { detail: { theme } }));
+    }
+
+    // Apply saved or default theme
+    applyTheme(getSavedTheme());
+
+    // Listen for toggle button clicks
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('.theme-toggle-btn');
+      if (!btn) return;
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const target = current === 'dark' ? 'light' : 'dark';
+      applyTheme(target);
+    });
+  })();
+</script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>
